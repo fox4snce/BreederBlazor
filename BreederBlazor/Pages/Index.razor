@@ -1,7 +1,80 @@
 ﻿@page "/"
+@using Services
+@using BreederBlazor.Services.Auth
+@using System.Net.Http
+@using BreederBlazor.Services.Util
 
-<h1>Hello, world!</h1>
+@inject IAuthService AuthService
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
 
-Welcome to your new app.
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+
+<h1>@Greeting</h1>
+
+
+<div>
+    @Error
+</div>
+<div class="login-form">
+    <form>
+        <div class="form-group">
+            <label>User Name</label>
+            <input @bind-value="Username" type="text" class="form-control" placeholder="User Name">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input @bind-value="Password" type="password" class="form-control" placeholder="Password">
+        </div>
+
+    </form>
+</div>
+
+<button class="btn btn-secondary" @onclick="@(async () => await Register())">Register</button>
+<button class="btn btn-secondary" @onclick="@(async () => await Login())">Login</button>
+
+@code
+{
+    string Greeting = "Hello, Breeder!";
+
+    string Username = "";
+    string Password = "";
+
+    string Error = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthService.user.Key != "")
+        {
+            Greeting = "Hello, " + AuthService.user.Username + "!";
+        }
+    }
+
+    private async Task Login()
+    {
+        var reg = new RegistrationInfo { Username = Username, Password = Password };
+
+        var response = await Http.PostAsJsonAsync("http://localhost:5050/auth/login", reg);
+
+        var content = await response.Content.ReadFromJsonAsync<ServiceResponse<string>>();
+
+        if (response.IsSuccessStatusCode && content.Data != "")
+        {
+            AuthService.user.Username = Username;
+            AuthService.user.Key = content.Data;
+
+            NavigationManager.NavigateTo("/home");
+        }
+
+
+    }
+
+    private async Task Register()
+    {
+        var reg = new RegistrationInfo { Username = Username, Password = Password };
+
+        var response = await Http.PostAsJsonAsync("http://localhost:5050/auth/register", reg);
+
+    }
+}
+

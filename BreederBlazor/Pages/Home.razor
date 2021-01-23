@@ -1,0 +1,59 @@
+﻿@page "/home"
+
+@using Services
+@using BreederBlazor.Services.Auth
+@using System.Net.Http
+@using BreederBlazor.Services.Util
+@using System.Net.Http.Headers
+@using BreederBlazor.Models.Base
+@using BreederBlazor.Services.BreedingRecords
+
+@inject IAuthService AuthService
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IBreedingRecordService BreedingRecordService
+
+@if (Loaded)
+{
+    <p>Successfully loaded home.</p>
+
+    @if(BreedingRecords != null)
+    {
+        foreach (BreedingRecord record in BreedingRecords)
+        {
+            <div class="row">
+                @record.Name
+            </div>
+        }
+    }
+}
+
+
+@code {
+
+    private bool Loaded = false;
+
+    private List<BreedingRecord> BreedingRecords;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthService.user.Key != "")
+        {
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthService.user.Key);
+
+            var response = await Http.GetAsync("http://localhost:5050/auth/Verify");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                AuthService.user.Username = "";
+                AuthService.user.Key = "";
+                NavigationManager.NavigateTo("/");
+            } else
+            {
+                BreedingRecords = await BreedingRecordService.GetAllBreedingRecords(AuthService.user.Key);
+            }
+        }
+
+        Loaded = true;
+    }
+}

@@ -1,3 +1,5 @@
+using BreederBlazor.Services.Auth;
+using BreederBlazor.Services.BreedingRecords;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -17,7 +19,14 @@ namespace BreederBlazor
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
             builder.RootComponents.Add<App>("#app");
 
-            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddSingleton<IAuthService, AuthService>();
+            builder.Services.AddSingleton<IBreedingRecordService, BreedingRecordService>();
+            builder.Services.AddSingleton(
+                sp => new HttpClient 
+                { 
+                    BaseAddress = new Uri(builder.HostEnvironment.BaseAddress)
+
+                });
 
             await builder.Build().RunAsync();
         }
