@@ -41,9 +41,15 @@ namespace BreederBlazor.Services.BreedingRecords
             return content.Data;
         }
 
-        public async Task<BreedingRecord> GetBreedingRecordById(int id)
+        public async Task<BreedingRecord> GetBreedingRecordById(string key, int id)
         {
-            throw new NotImplementedException();
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
+
+            var response = await Http.GetAsync("http://localhost:5050/BreedingRecord/" + id.ToString());
+
+            ServiceResponse<BreedingRecord> content = await response.Content.ReadFromJsonAsync<ServiceResponse<BreedingRecord>>();
+
+            return content.Data;
         }
 
         public async Task<BreedingRecord> UpdateBreedingRecord(BreedingRecord updatedBreedingRecord)

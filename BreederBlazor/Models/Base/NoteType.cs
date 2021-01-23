@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace BreederBlazor.Models.Base
 {
-    public enum Gender
+    public enum NoteType
     {
-        Female = 1,
-        Male = 2
+        BreedingRecord = 1,
+        Contact = 2
     }
 }

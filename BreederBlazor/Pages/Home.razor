@@ -15,14 +15,34 @@
 
 @if (Loaded)
 {
-    <p>Successfully loaded home.</p>
+    
 
-    @if(BreedingRecords != null)
+    @if (BreedingRecords != null)
     {
+        <div class="row">
+            <div class="col" style="border: 1px solid black;">
+                Name
+            </div>
+            <div class="col" style="border: 1px solid black;">
+                Birth Date
+            </div>
+            <div class="col" style="border: 1px solid black;">
+                Current Owner
+            </div>
+        </div>
+
         foreach (BreedingRecord record in BreedingRecords)
         {
             <div class="row">
-                @record.Name
+                <div class="col" style="border: 1px solid black;">
+                    <button class="btn btn-primary" @onclick="(() => GoToBreedingRecordDetails(record.Id))">@record.Name</button>
+                </div>
+                <div class="col" style="border: 1px solid black;">
+                    @record.Birthday.Date
+                </div>
+                <div class="col" style="border: 1px solid black;">
+                    @record.Owner.FirstName @record.Owner.LastName
+                </div>
             </div>
         }
     }
@@ -37,8 +57,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (AuthService.user.Key != "")
+        if (AuthService.user.Key != "" && AuthService.user.Key != null)
         {
+
+
+
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthService.user.Key);
 
             var response = await Http.GetAsync("http://localhost:5050/auth/Verify");
@@ -48,12 +71,22 @@
                 AuthService.user.Username = "";
                 AuthService.user.Key = "";
                 NavigationManager.NavigateTo("/");
-            } else
+            }
+            else
             {
                 BreedingRecords = await BreedingRecordService.GetAllBreedingRecords(AuthService.user.Key);
             }
         }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
 
         Loaded = true;
+    }
+
+    private void GoToBreedingRecordDetails(int id)
+    {
+        NavigationManager.NavigateTo("/breedingRecord/view/" + id.ToString());
     }
 }

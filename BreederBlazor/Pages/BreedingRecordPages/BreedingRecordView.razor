@@ -1,0 +1,163 @@
+﻿@page "/breedingRecord/view/{id:int}"
+
+@using Services
+@using BreederBlazor.Services.Auth
+@using System.Net.Http
+@using BreederBlazor.Services.Util
+@using System.Net.Http.Headers
+@using BreederBlazor.Models.Base
+@using BreederBlazor.Services.BreedingRecords
+
+@inject IAuthService AuthService
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IBreedingRecordService BreedingRecordService
+
+<h3>BreedingRecordView</h3>
+
+@if (Loaded && Record != null)
+{
+    <div class="row">
+        <div class="col">
+            Name
+        </div>
+        <div class="col">
+            @Record.Name
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Owner
+        </div>
+        <div class="col">
+            @Record.Owner.FirstName @Record.Owner.LastName
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Birthday
+        </div>
+        <div class="col">
+            @Record.Birthday.Date.ToShortDateString()
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Sex
+        </div>
+        <div class="col">
+            @Record.Sex
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            Date of Acquisition
+        </div>
+        <div class="col">
+            @Record.DateOfAcquisition.ToShortDateString()
+        </div>
+    </div>
+    @if (Record.BirthLitter != null)
+    {
+        <div class="row">
+            <div class="col">
+                Birth Litter
+            </div>
+            <div class="col">
+                @Record.BirthLitter.Name
+            </div>
+        </div>
+    }
+
+
+
+    @if (Record.Breeder != null)
+    {
+        <div class="row">
+            <div class="col">
+                Breeder
+            </div>
+            <div class="col">
+                @Record.Breeder.FirstName @Record.Breeder.LastName
+            </div>
+        </div>
+    }
+
+
+
+
+    <div class="row">
+        @foreach (Characteristic characteristic in Record.Characteristics)
+        {
+            <div class="row">
+                <div class="col">@characteristic.Category</div>
+                <div class="col">@characteristic.Feature</div>
+            </div>
+        }
+    </div>
+
+    @foreach (BreedingRecordNote note in Record.Notes)
+    {
+        <div class="row">
+            <div class="col">@note.Title</div>
+            <div class="col">@note.Edited.ToShortDateString()</div>
+        </div>
+        <div class="row">
+            <div class="col">
+                @note.Body
+            </div>
+        </div>
+    }
+
+}
+
+@code
+{
+    [Parameter]
+    public int id { get; set; }
+
+
+
+    private bool Loaded = false;
+
+    private BreedingRecord Record;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthService.user.Key != "" && AuthService.user.Key != null)
+        {
+
+
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthService.user.Key);
+
+            var response = await Http.GetAsync("http://localhost:5050/auth/Verify");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                AuthService.user.Username = "";
+                AuthService.user.Key = "";
+                NavigationManager.NavigateTo("/");
+            }
+            else
+            {
+
+                await RetrieveDetails();
+            }
+
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+        Loaded = true;
+    }
+
+
+    private async Task RetrieveDetails()
+    {
+        Record = await BreedingRecordService.GetBreedingRecordById(AuthService.user.Key, id);
+
+    }
+
+}
