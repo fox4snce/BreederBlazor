@@ -6,6 +6,9 @@
 @using BreederBlazor.Services.Util
 @using System.Net.Http.Headers
 @using BreederBlazor.Models.Base
+@using Radzen
+@using Radzen.Blazor
+
 @using BreederBlazor.Services.BreedingRecords
 
 @inject IAuthService AuthService
@@ -15,37 +18,36 @@
 
 @if (Loaded)
 {
+
+<RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterMode="FilterMode.Advanced" AllowPaging="true" PageSize="4"
+            AllowSorting="true" Data="@breedingRecords.AsQueryable()" TItem="BreedingRecord" Value="@Record" ColumnWidth="200px">
+    <Columns>
+            <RadzenGridColumn TItem="BreedingRecord" Property="Name" Title="Name">
+                <Template Context="data">
+                    <div @onclick="(() => GoToBreedingRecordDetails(data.Id))">@data.Name</div>
+                </Template>
+                </RadzenGridColumn>
+
+            <RadzenGridColumn TItem="BreedingRecord" Property="BirthDate" Title="Birth Date">
+                <Template Context="data">
+                    @String.Format("{0:d}", data.Birthday)
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="BreedingRecord" Property="DateOfAcquisition" Title="Acquired">
+                <Template Context="data">
+                    @String.Format("{0:d}", data.DateOfAcquisition)
+                </Template>
+            </RadzenGridColumn>
+            <RadzenGridColumn TItem="BreedingRecord" Property="Owner.Name" Title="Owner" />
+            <RadzenGridColumn TItem="BreedingRecord" Property="BirthLitter.Name" Title="Birth Litter" />
+            <RadzenGridColumn TItem="BreedingRecord" Property="Sex" Title="Sex" />
+            <RadzenGridColumn TItem="BreedingRecord" Property="Breeder.Name" Title="Breeder" />
+        </Columns>
+
+</RadzenGrid>
+
+
     
-
-    @if (BreedingRecords != null)
-    {
-        <div class="row">
-            <div class="col" style="border: 1px solid black;">
-                Name
-            </div>
-            <div class="col" style="border: 1px solid black;">
-                Birth Date
-            </div>
-            <div class="col" style="border: 1px solid black;">
-                Current Owner
-            </div>
-        </div>
-
-        foreach (BreedingRecord record in BreedingRecords)
-        {
-            <div class="row">
-                <div class="col" style="border: 1px solid black;">
-                    <button class="btn btn-primary" @onclick="(() => GoToBreedingRecordDetails(record.Id))">@record.Name</button>
-                </div>
-                <div class="col" style="border: 1px solid black;">
-                    @record.Birthday.Date
-                </div>
-                <div class="col" style="border: 1px solid black;">
-                    @record.Owner.FirstName @record.Owner.LastName
-                </div>
-            </div>
-        }
-    }
 }
 
 
@@ -53,7 +55,9 @@
 
     private bool Loaded = false;
 
-    private List<BreedingRecord> BreedingRecords;
+    private List<BreedingRecord> breedingRecords;
+
+    private BreedingRecord Record;
 
     protected override async Task OnInitializedAsync()
     {
@@ -74,7 +78,7 @@
             }
             else
             {
-                BreedingRecords = await BreedingRecordService.GetAllBreedingRecords(AuthService.user.Key);
+                breedingRecords = await BreedingRecordService.GetAllBreedingRecords(AuthService.user.Key);
             }
         }
         else

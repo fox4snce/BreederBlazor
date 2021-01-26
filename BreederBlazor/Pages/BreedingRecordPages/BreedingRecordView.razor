@@ -6,35 +6,28 @@
 @using BreederBlazor.Services.Util
 @using System.Net.Http.Headers
 @using BreederBlazor.Models.Base
+@using BreederBlazor.Components
 @using BreederBlazor.Services.BreedingRecords
+
 
 @inject IAuthService AuthService
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 @inject IBreedingRecordService BreedingRecordService
 
-<h3>BreedingRecordView</h3>
-
 @if (Loaded && Record != null)
 {
     <div class="row">
-        <div class="col">
+        <div class="col-2">
             Name
         </div>
         <div class="col">
             @Record.Name
         </div>
     </div>
+
     <div class="row">
-        <div class="col">
-            Owner
-        </div>
-        <div class="col">
-            @Record.Owner.FirstName @Record.Owner.LastName
-        </div>
-    </div>
-    <div class="row">
-        <div class="col">
+        <div class="col-2">
             Birthday
         </div>
         <div class="col">
@@ -42,7 +35,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col-2">
             Sex
         </div>
         <div class="col">
@@ -50,7 +43,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col">
+        <div class="col-2">
             Date of Acquisition
         </div>
         <div class="col">
@@ -60,7 +53,7 @@
     @if (Record.BirthLitter != null)
     {
         <div class="row">
-            <div class="col">
+            <div class="col-2">
                 Birth Litter
             </div>
             <div class="col">
@@ -69,28 +62,35 @@
         </div>
     }
 
-
-
     @if (Record.Breeder != null)
     {
         <div class="row">
-            <div class="col">
+            <div class="col-2">
                 Breeder
             </div>
             <div class="col">
-                @Record.Breeder.FirstName @Record.Breeder.LastName
+                <ContactComponent contactRecord="@Record.Breeder" />
             </div>
         </div>
     }
-
-
-
+    
+    @if (Record.Owner != null)
+    {
+        <div class="row">
+            <div class="col-2">
+                Owner
+            </div>
+            <div class="col">
+                <ContactComponent contactRecord="@Record.Owner" />
+            </div>
+        </div>
+    }
 
     <div class="row">
         @foreach (Characteristic characteristic in Record.Characteristics)
         {
             <div class="row">
-                <div class="col">@characteristic.Category</div>
+                <div class="col-2">@characteristic.Category</div>
                 <div class="col">@characteristic.Feature</div>
             </div>
         }
@@ -98,15 +98,7 @@
 
     @foreach (BreedingRecordNote note in Record.Notes)
     {
-        <div class="row">
-            <div class="col">@note.Title</div>
-            <div class="col">@note.Edited.ToShortDateString()</div>
-        </div>
-        <div class="row">
-            <div class="col">
-                @note.Body
-            </div>
-        </div>
+        <BreedingRecordNoteComponent Note="note" />
     }
 
 }

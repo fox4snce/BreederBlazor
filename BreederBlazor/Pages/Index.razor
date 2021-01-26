@@ -3,6 +3,8 @@
 @using BreederBlazor.Services.Auth
 @using System.Net.Http
 @using BreederBlazor.Services.Util
+@using Radzen.Blazor
+@using Radzen
 
 @inject IAuthService AuthService
 @inject HttpClient Http
@@ -12,33 +14,42 @@
 
 <h1>@Greeting</h1>
 
-
-<div>
-    @Error
-</div>
-<div class="login-form">
-    <form>
-        <div class="form-group">
-            <label>User Name</label>
-            <input @bind-value="Username" type="text" class="form-control" placeholder="User Name">
-        </div>
-        <div class="form-group">
-            <label>Password</label>
-            <input @bind-value="Password" type="password" class="form-control" placeholder="Password">
-        </div>
-
-    </form>
+<div class="row">
+    <div class="col-xl-6">
+        <RadzenCard>
+            <RadzenLogin Login=@(args => OnLogin(args, "Login with register and password reset"))
+                         ResetPassword=@(args => OnResetPassword(args, "Login with register and password reset"))
+                         Register=@(args => OnRegister("Login with register and password reset")) Style="margin-bottom: 20px;" />
+        </RadzenCard>
+    </div>
 </div>
 
-<button class="btn btn-secondary" @onclick="@(async () => await Register())">Register</button>
-<button class="btn btn-secondary" @onclick="@(async () => await Login())">Login</button>
+@*<div>
+        @Error
+    </div>
+    <div class="login-form">
+        <form>
+            <div class="form-group">
+                <label>User Name</label>
+                <input @bind-value="Username" type="text" class="form-control" placeholder="User Name">
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input @bind-value="Password" type="password" class="form-control" placeholder="Password">
+            </div>
+
+        </form>
+    </div>
+
+    <button class="btn btn-secondary" @onclick="@(async () => await Register())">Register</button>
+    <button class="btn btn-secondary" @onclick="@(async () => await Login())">Login</button>*@
 
 @code
 {
     string Greeting = "Hello, Breeder!";
 
-    string Username = "";
-    string Password = "";
+    string userName = "admin";
+    string password = "admin";
 
     string Error = "";
 
@@ -52,7 +63,7 @@
 
     private async Task Login()
     {
-        var reg = new RegistrationInfo { Username = Username, Password = Password };
+        var reg = new RegistrationInfo { Username = userName, Password = password };
 
         var response = await Http.PostAsJsonAsync("http://localhost:5050/auth/login", reg);
 
@@ -60,7 +71,7 @@
 
         if (response.IsSuccessStatusCode && content.Data != "")
         {
-            AuthService.user.Username = Username;
+            AuthService.user.Username = userName;
             AuthService.user.Key = content.Data;
 
             NavigationManager.NavigateTo("/home");
@@ -71,10 +82,28 @@
 
     private async Task Register()
     {
-        var reg = new RegistrationInfo { Username = Username, Password = Password };
+        var reg = new RegistrationInfo { Username = userName, Password = password };
 
         var response = await Http.PostAsJsonAsync("http://localhost:5050/auth/register", reg);
 
+    }
+
+    private async Task OnLogin(LoginArgs args, string name)
+    {
+        //console.Log($"{name} -> Username: {args.Username} and password: {args.Password}");
+
+        await Login();
+        
+    }
+
+    void OnRegister(string name)
+    {
+        //console.Log($"{name} -> Register");
+    }
+
+    void OnResetPassword(string value, string name)
+    {
+        //console.Log($"{name} -> ResetPassword for user: {value}");
     }
 }
 

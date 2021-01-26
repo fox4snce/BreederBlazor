@@ -24,6 +24,15 @@ namespace BreederBlazor.Models.Base
         public string PhoneNumber { get; set; }
         public string CellPhone { get; set; }
         public List<ContactNote> Notes { get; set; }
+
+        public string Name { 
+            
+            get
+            {
+                return FirstName + " " + LastName;
+            }
+        }
+
         
     }
 }
