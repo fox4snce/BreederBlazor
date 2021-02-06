@@ -1,5 +1,7 @@
 using BreederBlazor.Services.Auth;
 using BreederBlazor.Services.BreedingRecords;
+using BreederBlazor.Services.Contacts;
+using BreederBlazor.Services.Litters;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,8 @@ namespace BreederBlazor
 
             builder.Services.AddSingleton<IAuthService, AuthService>();
             builder.Services.AddSingleton<IBreedingRecordService, BreedingRecordService>();
+            builder.Services.AddSingleton<IContactService, ContactService>();
+            builder.Services.AddSingleton<ILitterService, LitterService>();
             builder.Services.AddSingleton(
                 sp => new HttpClient 
                 { 

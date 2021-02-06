@@ -1,4 +1,5 @@
 ﻿using BreederBlazor.Models.Base;
+using BreederBlazor.Models.Dtos.BreedingRecordDto;
 using BreederBlazor.Services.Util;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace BreederBlazor.Services.BreedingRecords
             Http = _http;
         }
 
-        public async Task<List<BreedingRecord>> CreateBreedingRecord(BreedingRecord newBreedingRecord)
+        public async Task<List<BreedingRecord>> CreateBreedingRecord(CreateBreedingRecordDto newBreedingRecord)
         {
             throw new NotImplementedException();
         }
@@ -52,7 +53,7 @@ namespace BreederBlazor.Services.BreedingRecords
             return content.Data;
         }
 
-        public async Task<BreedingRecord> UpdateBreedingRecord(BreedingRecord updatedBreedingRecord)
+        public async Task<BreedingRecord> UpdateBreedingRecord(UpdateBreedingRecordDto updatedBreedingRecord)
         {
             throw new NotImplementedException();
         }

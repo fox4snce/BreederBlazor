@@ -13,9 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\Dtos\Auth\" />
-    <Folder Include="Services\Contacts\" />
-    <Folder Include="Services\Litters\" />
+    <Folder Include="Models\Dtos\AuthDto\" />
   </ItemGroup>
 
 </Project>

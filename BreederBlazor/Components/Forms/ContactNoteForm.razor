@@ -1,0 +1,51 @@
+﻿@using Radzen.Blazor
+@using Radzen
+@using BreederBlazor.Models.Base
+
+<RadzenFieldset Text="Note">
+    <div class="row">
+        <div class="col-md-4 align-items-center d-flex">
+            <RadzenLabel Text="Subject" />
+        </div>
+        <div class="col-md-8">
+            <RadzenTextBox style="width: 100%;" Title="Title" />
+        </div>
+    </div>
+    <RadzenHtmlEditor @bind-Value=@value style="height: 500px; margin-bottom: 1rem;" UploadUrl="upload/image" Change=@OnChange Paste=@OnPaste Execute=@OnExecute>
+        <RadzenHtmlEditorUndo />
+        <RadzenHtmlEditorRedo />
+        <RadzenHtmlEditorSeparator />
+        <RadzenHtmlEditorBold />
+        <RadzenHtmlEditorItalic />
+        <RadzenHtmlEditorUnderline />
+        <RadzenHtmlEditorStrikeThrough />
+        <RadzenHtmlEditorSeparator />
+        <RadzenHtmlEditorColor />
+        <RadzenHtmlEditorBackground />
+        <RadzenHtmlEditorRemoveFormat />
+    </RadzenHtmlEditor>
+</RadzenFieldset>
+
+@code {
+
+    Note note = new Note();
+
+    //EventConsole console;
+
+    string value = "";
+
+    void OnPaste(HtmlEditorPasteEventArgs args)
+    {
+        //console.Log($"Paste: {args.Html}");
+    }
+
+    void OnChange(string html)
+    {
+        //console.Log($"Change: {html}");
+    }
+
+    void OnExecute(HtmlEditorExecuteEventArgs args)
+    {
+        //console.Log($"Execute: {args.CommandName}");
+    }
+}

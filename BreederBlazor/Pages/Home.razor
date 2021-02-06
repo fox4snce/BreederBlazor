@@ -19,6 +19,9 @@
 @if (Loaded)
 {
 
+
+    <BreederBlazor.Components.Forms.BreedingRecordForm  />
+
 <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterMode="FilterMode.Advanced" AllowPaging="true" PageSize="4"
             AllowSorting="true" Data="@breedingRecords.AsQueryable()" TItem="BreedingRecord" Value="@Record" ColumnWidth="200px">
     <Columns>

@@ -1,4 +1,5 @@
 ﻿using BreederBlazor.Models.Base;
+using BreederBlazor.Models.Dtos.BreedingRecordDto;
 using BreederBlazor.Services.Util;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace BreederBlazor.Services.BreedingRecords
     public interface IBreedingRecordService
     {
         // Create
-        Task<List<BreedingRecord>> CreateBreedingRecord(BreedingRecord newBreedingRecord);
+        Task<List<BreedingRecord>> CreateBreedingRecord(CreateBreedingRecordDto newBreedingRecord);
 
         // Read
         Task<List<BreedingRecord>> GetAllBreedingRecords(string key);
@@ -18,7 +19,7 @@ namespace BreederBlazor.Services.BreedingRecords
         Task<BreedingRecord> GetBreedingRecordById(string key, int id);
 
         // Update
-        Task<BreedingRecord> UpdateBreedingRecord(BreedingRecord updatedBreedingRecord);
+        Task<BreedingRecord> UpdateBreedingRecord(UpdateBreedingRecordDto updatedBreedingRecord);
 
         // Delete
         Task<List<BreedingRecord>> DeleteBreedingRecord(int id);

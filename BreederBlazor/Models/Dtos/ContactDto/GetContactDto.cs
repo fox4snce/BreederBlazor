@@ -1,15 +1,14 @@
-﻿using BreederBlazor.Models.Auth;
+﻿using BreederBlazor.Models.Base;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BreederBlazor.Models.Base
+namespace BreederBlazor.Models.Dtos.ContactDto
 {
-    public class Contact
+    public class GetContactDto
     {
         public int Id { get; set; }
-        public User User { get; set; }
         public bool Public { get; set; } = false;
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -23,16 +22,7 @@ namespace BreederBlazor.Models.Base
         public string Country { get; set; }
         public string PhoneNumber { get; set; }
         public string CellPhone { get; set; }
+
         public ICollection<Note> Notes { get; set; }
-
-        public string Name { 
-            
-            get
-            {
-                return FirstName + " " + LastName;
-            }
-        }
-
-        
     }
 }

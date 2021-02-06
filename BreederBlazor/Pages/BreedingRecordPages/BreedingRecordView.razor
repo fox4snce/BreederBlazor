@@ -6,7 +6,7 @@
 @using BreederBlazor.Services.Util
 @using System.Net.Http.Headers
 @using BreederBlazor.Models.Base
-@using BreederBlazor.Components
+@using BreederBlazor.Components.Views
 @using BreederBlazor.Services.BreedingRecords
 
 
@@ -17,139 +17,143 @@
 
 @if (Loaded && Record != null)
 {
-    <div class="row">
-        <div class="col-2">
-            Name
+    <div class="row" style="margin-bottom: 8px; padding: 4px; background-color: azure;">
+        <div class="col" style="text-align: center;">
+            <strong>@Record.Name</strong>
         </div>
-        <div class="col">
-            @Record.Name
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-2">
-            Birthday
-        </div>
-        <div class="col">
+        <div class="col" style="text-align: center;">
             @Record.Birthday.Date.ToShortDateString()
         </div>
-    </div>
-    <div class="row">
-        <div class="col-2">
-            Sex
-        </div>
-        <div class="col">
+        <div class="col" style="text-align: center;">
             @Record.Sex
         </div>
     </div>
-    <div class="row">
-        <div class="col-2">
-            Date of Acquisition
-        </div>
-        <div class="col">
-            @Record.DateOfAcquisition.ToShortDateString()
-        </div>
-    </div>
-    @if (Record.BirthLitter != null)
-    {
-        <div class="row">
-            <div class="col-2">
-                Birth Litter
-            </div>
-            <div class="col">
-                @Record.BirthLitter.Name
-            </div>
-        </div>
-    }
 
-    @if (Record.Breeder != null)
-    {
-        <div class="row">
-            <div class="col-2">
-                Breeder
-            </div>
-            <div class="col">
-                <ContactComponent contactRecord="@Record.Breeder" />
-            </div>
-        </div>
-    }
-    
-    @if (Record.Owner != null)
-    {
-        <div class="row">
-            <div class="col-2">
-                Owner
-            </div>
-            <div class="col">
-                <ContactComponent contactRecord="@Record.Owner" />
-            </div>
-        </div>
-    }
+    <RadzenTabs Change=@OnChange style="">
+        <Tabs>
+            <RadzenTabsItem Text="Info">
+                <div class="row">
+                    <div class="col" style="text-align: right;">
+                        Acquired
+                    </div>
+                    <div class="col">
+                        @Record.DateOfAcquisition.ToShortDateString()
+                    </div>
+                </div>
+                @if (Record.BirthLitter != null)
+                {
+                    <div class="row">
+                        <div class="col" style="text-align: right;">
+                            Birth Litter
+                        </div>
+                        <div class="col">
+                            @Record.BirthLitter.Name
+                        </div>
+                    </div>
+                }
+            @foreach (Characteristic characteristic in Record.Characteristics)
+                {
+                    <div class="row">
+                        <div class="col" style="text-align: right;">
+                            @characteristic.Category
+                        </div>
+                        <div class="col">
+                            @characteristic.Feature
+                        </div>
+                    </div>
+                }
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="Notes">
+                @foreach (Note note in Record.Notes)
+                {
+                    <div style="margin: 10px;">
+                        <NoteComponent Note="note" />
+                    </div>
+                }
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="Contacts">
+                @if (Record.Owner != null)
+                {
+                    <div class="row">
+                        <div class="col-sm">
+                            Owner
+                        </div>
+                        <div class="col-sm">
+                            <ContactComponent contactRecord="@Record.Owner" />
+                        </div>
+                    </div>
+                }
+                
+                @if (Record.Breeder != null)
+                {
+                    <div class="row" style="margin-top: 10px;">
+                        <div class="col-sm">
+                            Breeder
+                        </div>
+                        <div class="col-sm">
+                            <ContactComponent contactRecord="@Record.Breeder" />
+                        </div>
+                    </div>
+                }
 
-    <div class="row">
-        @foreach (Characteristic characteristic in Record.Characteristics)
-        {
-            <div class="row">
-                <div class="col-2">@characteristic.Category</div>
-                <div class="col">@characteristic.Feature</div>
-            </div>
-        }
-    </div>
 
-    @foreach (BreedingRecordNote note in Record.Notes)
-    {
-        <BreedingRecordNoteComponent Note="note" />
-    }
-
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
 }
 
 @code
 {
-    [Parameter]
-    public int id { get; set; }
+                [Parameter]
+                public int id { get; set; }
 
 
 
-    private bool Loaded = false;
+                private bool Loaded = false;
 
-    private BreedingRecord Record;
+                private BreedingRecord Record;
 
-    protected override async Task OnInitializedAsync()
-    {
-        if (AuthService.user.Key != "" && AuthService.user.Key != null)
-        {
+                protected override async Task OnInitializedAsync()
+                {
+                    if (AuthService.user.Key != "" && AuthService.user.Key != null)
+                    {
 
 
-            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthService.user.Key);
+                        Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthService.user.Key);
 
-            var response = await Http.GetAsync("http://localhost:5050/auth/Verify");
+                        var response = await Http.GetAsync("http://localhost:5050/auth/Verify");
 
-            if (!response.IsSuccessStatusCode)
-            {
-                AuthService.user.Username = "";
-                AuthService.user.Key = "";
-                NavigationManager.NavigateTo("/");
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            AuthService.user.Username = "";
+                            AuthService.user.Key = "";
+                            NavigationManager.NavigateTo("/");
+                        }
+                        else
+                        {
+
+                            await RetrieveDetails();
+                        }
+
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo("/");
+                    }
+
+                    Loaded = true;
+                }
+
+
+                private async Task RetrieveDetails()
+                {
+                    Record = await BreedingRecordService.GetBreedingRecordById(AuthService.user.Key, id);
+
+                }
+
+                void OnChange(int index)
+                {
+                    //console.Log($"Tab with index {index} was selected.");
+                }
+
             }
-            else
-            {
-
-                await RetrieveDetails();
-            }
-
-        }
-        else
-        {
-            NavigationManager.NavigateTo("/");
-        }
-
-        Loaded = true;
-    }
-
-
-    private async Task RetrieveDetails()
-    {
-        Record = await BreedingRecordService.GetBreedingRecordById(AuthService.user.Key, id);
-
-    }
-
-}
