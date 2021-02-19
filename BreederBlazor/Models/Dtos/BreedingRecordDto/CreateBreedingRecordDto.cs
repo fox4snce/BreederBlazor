@@ -9,12 +9,12 @@ namespace BreederBlazor.Models.Dtos.BreedingRecordDto
     public class CreateBreedingRecordDto
     {
         public string Name { get; set; } = string.Empty;
-        public Contact Owner { get; set; }
+        public int OwnerId { get; set; }
         public bool Public { get; set; } = false;
         public int BirthLitterId { get; set; }
         public DateTime Birthday { get; set; }
         public int Sex { get; set; }
-        public Contact Breeder { get; set; }
+        public int BreederId { get; set; }
         public DateTime DateOfAcquisition { get; set; }
 
         

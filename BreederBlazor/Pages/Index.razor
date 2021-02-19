@@ -10,8 +10,6 @@
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
 
-
-
 <h1>@Greeting</h1>
 
 <div class="row">
@@ -23,26 +21,6 @@
         </RadzenCard>
     </div>
 </div>
-
-@*<div>
-        @Error
-    </div>
-    <div class="login-form">
-        <form>
-            <div class="form-group">
-                <label>User Name</label>
-                <input @bind-value="Username" type="text" class="form-control" placeholder="User Name">
-            </div>
-            <div class="form-group">
-                <label>Password</label>
-                <input @bind-value="Password" type="password" class="form-control" placeholder="Password">
-            </div>
-
-        </form>
-    </div>
-
-    <button class="btn btn-secondary" @onclick="@(async () => await Register())">Register</button>
-    <button class="btn btn-secondary" @onclick="@(async () => await Login())">Login</button>*@
 
 @code
 {
@@ -74,7 +52,8 @@
             AuthService.user.Username = userName;
             AuthService.user.Key = content.Data;
 
-            NavigationManager.NavigateTo("/home");
+            
+            NavigationManager.NavigateTo("/breedingRecordList");
         }
 
 

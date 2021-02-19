@@ -1,18 +1,13 @@
 ﻿@page "/breedingRecord/view/{id:int}"
 
-@using Services
-@using BreederBlazor.Services.Auth
-@using System.Net.Http
-@using BreederBlazor.Services.Util
-@using System.Net.Http.Headers
 @using BreederBlazor.Models.Base
 @using BreederBlazor.Components.Views
+
 @using BreederBlazor.Services.BreedingRecords
+@using BreederBlazor.Components
 
+@inherits BasePageComponent
 
-@inject IAuthService AuthService
-@inject HttpClient Http
-@inject NavigationManager NavigationManager
 @inject IBreedingRecordService BreedingRecordService
 
 @if (Loaded && Record != null)
@@ -51,7 +46,7 @@
                         </div>
                     </div>
                 }
-            @foreach (Characteristic characteristic in Record.Characteristics)
+                @foreach (Characteristic characteristic in Record.Characteristics)
                 {
                     <div class="row">
                         <div class="col" style="text-align: right;">
@@ -83,7 +78,7 @@
                         </div>
                     </div>
                 }
-                
+
                 @if (Record.Breeder != null)
                 {
                     <div class="row" style="margin-top: 10px;">
@@ -104,56 +99,34 @@
 
 @code
 {
-                [Parameter]
-                public int id { get; set; }
+    [Parameter]
+    public int id { get; set; }
 
 
 
-                private bool Loaded = false;
-
-                private BreedingRecord Record;
-
-                protected override async Task OnInitializedAsync()
-                {
-                    if (AuthService.user.Key != "" && AuthService.user.Key != null)
-                    {
 
 
-                        Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthService.user.Key);
+    private BreedingRecord Record;
 
-                        var response = await Http.GetAsync("http://localhost:5050/auth/Verify");
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
 
-                        if (!response.IsSuccessStatusCode)
-                        {
-                            AuthService.user.Username = "";
-                            AuthService.user.Key = "";
-                            NavigationManager.NavigateTo("/");
-                        }
-                        else
-                        {
+        await RetrieveDetails();
 
-                            await RetrieveDetails();
-                        }
-
-                    }
-                    else
-                    {
-                        NavigationManager.NavigateTo("/");
-                    }
-
-                    Loaded = true;
-                }
+        Loaded = true;
+    }
 
 
-                private async Task RetrieveDetails()
-                {
-                    Record = await BreedingRecordService.GetBreedingRecordById(AuthService.user.Key, id);
+    private async Task RetrieveDetails()
+    {
+        Record = await BreedingRecordService.GetBreedingRecordById(AuthService.user.Key, id);
 
-                }
+    }
 
-                void OnChange(int index)
-                {
-                    //console.Log($"Tab with index {index} was selected.");
-                }
+    void OnChange(int index)
+    {
+        //console.Log($"Tab with index {index} was selected.");
+    }
 
-            }
+}

@@ -11,7 +11,7 @@ namespace BreederBlazor.Services.BreedingRecords
     public interface IBreedingRecordService
     {
         // Create
-        Task<List<BreedingRecord>> CreateBreedingRecord(CreateBreedingRecordDto newBreedingRecord);
+        Task<List<BreedingRecord>> CreateBreedingRecord(CreateBreedingRecordDto newBreedingRecord, string key);
 
         // Read
         Task<List<BreedingRecord>> GetAllBreedingRecords(string key);

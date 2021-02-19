@@ -1,10 +1,7 @@
-﻿@using Services
-@using BreederBlazor.Services.Auth
+﻿@using BreederBlazor.Services.Auth
 @using System.Net.Http
 @using BreederBlazor.Services.Util
-@using System.Net.Http.Headers
 @using BreederBlazor.Models.Base
-@using BreederBlazor.Components.Views
 @using BreederBlazor.Services.BreedingRecords
 @using BreederBlazor.Services.Contacts
 @using BreederBlazor.Services.Litters
@@ -20,14 +17,18 @@
 @if (Loaded)
 {
     <div class="container" style="margin: 20px 7px 20px 4px;">
+        
+        <div class="row">
+            <div class="col BreedingRecordFormCol">
+                <h3>Name</h3>
+                <RadzenTextBox @bind-Value=@createBreedingRecordDto.Name Change=@(args => OnChange(args, "TextBox")) />
+            </div>
+        </div>
+
         <div class="row">
             <div class="col">
-                <h3>Name</h3>
-                <RadzenTextBox @bind-Value=@createBreedingRecordDto.Name Change=@(args => OnChangeName(args, "TextBox")) />
-            </div>
-            <div class="col">
                 <h3>Gender</h3>
-                <RadzenSelectBar @bind-Value=@createBreedingRecordDto.Sex TValue="int" Change=@(args => OnChangeGender(args, "SelectBar with single selection"))>
+                <RadzenSelectBar @bind-Value=@createBreedingRecordDto.Sex TValue="int" Change=@(args => OnChange(args, "SelectBar with single selection"))>
                     <Items>
                         <RadzenSelectBarItem Text="M" Value="1" />
                         <RadzenSelectBarItem Text="F" Value="2" />
@@ -36,22 +37,23 @@
             </div>
         </div>
 
+
         <div class="row">
             <div class="col">
                 <h3>Birth Litter</h3>
                 <RadzenDropDown AllowClear="true" TValue="int"
                                 Data=@(litters.Distinct())
-                                TextProperty="Name" ValueProperty="Id" Change=@(args => OnChangeOwner(args, "DropDown")) />
+                                TextProperty="Name" ValueProperty="Id" @bind-Value=@createBreedingRecordDto.BirthLitterId Change=@(args => OnChange(args, "DropDown")) />
             </div>
         </div>
         <div class="row">
             <div class="col">
                 <h3>Born</h3>
-                <RadzenDatePicker @bind-Value=@createBreedingRecordDto.Birthday DateFormat="d" Change=@(args => OnChangeBirthDay(args, "DatePicker", "MM/dd/yyyy")) />
+                <RadzenDatePicker @bind-Value=@createBreedingRecordDto.Birthday DateFormat="d" Change=@(args => OnChange(args, "DatePicker")) />
             </div>
             <div class="col">
                 <h3>Acquired</h3>
-                <RadzenDatePicker @bind-Value=@createBreedingRecordDto.DateOfAcquisition DateFormat="d" Change=@(args => OnChangeAcquisition(args, "DatePicker", "MM/dd/yyyy")) />
+                <RadzenDatePicker @bind-Value=@createBreedingRecordDto.DateOfAcquisition DateFormat="d" Change=@(args => OnChange(args, "DatePicker")) />
             </div>
         </div>
 
@@ -60,100 +62,90 @@
                 <h3>Owner</h3>
                 <RadzenDropDown AllowClear="true" TValue="int"
                                 Data=@(contacts.Distinct())
-                                TextProperty="Name" ValueProperty="Id" Change=@(args => OnChangeOwner(args, "DropDown")) />
+                                TextProperty="Name" ValueProperty="Id" @bind-Value=@createBreedingRecordDto.OwnerId Change=@(args => OnChange(args, "DropDown")) />
             </div>
             <div class="col">
                 <h3>Breeder</h3>
                 <RadzenDropDown AllowClear="true" TValue="int"
                                 Data=@(contacts.Distinct())
-                                TextProperty="Name" ValueProperty="Id" Change=@(args => OnChangeBreeder(args, "DropDown")) />
+                                TextProperty="Name" ValueProperty="Id" @bind-Value=@createBreedingRecordDto.BreederId Change=@(args => OnChange(args, "DropDown")) />
             </div>
         </div>
         <div class="row">
             <div class="col">
-                <h3>Make this record public?</h3>
-                <RadzenCheckBox @bind-Value=@createBreedingRecordDto.Public TValue="bool" Change=@(args => OnChangePublic(args, "CheckBox1 CheckBox")) />
+                <h3>Make this record public? <RadzenCheckBox @bind-Value=@createBreedingRecordDto.Public TValue="bool" Change=@(args => OnChange(args, "CheckBox1 CheckBox")) /></h3>
+
             </div>
         </div>
+        <div class="row">
+            <div class="col">
+                <RadzenButton Click=@(args => OnClickSubmit("Button with text")) Text="Submit" Style="margin-bottom: 20px; background-color: forestgreen;" />
+            </div>
+            <div class="col">
+                <RadzenButton Click=@(args => OnClickCancel("Button with text")) Text="Cancel" Style="margin-bottom: 20px; background-color: red;" />
+            </div>
         </div>
-        }
-        else
-        {
-        <h3>Loading...</h3>
-        }
+    </div>
 
+    <div class="col-xl-6">
+        <EventConsole @ref=@console />
+    </div>
 
-
-
-
-
-
-        @code
+}
+else
 {
-            DateTime? Birthday = DateTime.Now;
-            IEnumerable<Contact> contacts;
-            IEnumerable<Litter> litters;
+    <h3>Loading...</h3>
+}
 
-            CreateBreedingRecordDto createBreedingRecordDto;
+@code
+{
+    [Parameter]
+    public EventCallback ReturnToPreviousUrl { get; set; }
+
+    DateTime? Birthday = DateTime.Now;
+    IEnumerable<Contact> contacts;
+    IEnumerable<Litter> litters;
+
+    CreateBreedingRecordDto createBreedingRecordDto;
 
     private bool Loaded = false;
 
-        protected override async Task OnInitializedAsync()
-        {
-            if (AuthService.user.Key != "" && AuthService.user.Key != null)
-            {
-                createBreedingRecordDto = new CreateBreedingRecordDto();
+    EventConsole console;
 
-                // Load contacts
-                contacts = await ContactService.GetAllContacts(AuthService.user.Key);
+    protected override async Task OnInitializedAsync()
+    {
 
-                // Load litters
-                litters = await LitterService.GetAllLitters(AuthService.user.Key);
-            }
-            else
-            {
-                NavigationManager.NavigateTo("/");
-            }
+        createBreedingRecordDto = new CreateBreedingRecordDto();
 
-            Loaded = true;
-        }
+        // Load contacts
+        contacts = await ContactService.GetAllContacts(AuthService.user.Key);
 
-        void OnChangeBirthDay(DateTime? value, string name, string format)
-        {
-            //console.Log($"{name} value changed to {value?.ToString(format)}");
-        }
+        // Load litters
+        litters = await LitterService.GetAllLitters(AuthService.user.Key);
 
-        void OnChangeAcquisition(DateTime? value, string name, string format)
-        {
-            //console.Log($"{name} value changed to {value?.ToString(format)}");
-        }
+        Loaded = true;
+    }
 
-        void OnChangeName(string value, string name)
-        {
-            //console.Log($"{name} value changed to {value}");
-        }
 
-        void OnChangeOwner(object value, string name)
-        {
-            var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
+    async Task OnClickSubmit(string buttonName)
+    {
+        await BreedingRecordService.CreateBreedingRecord(createBreedingRecordDto, AuthService.user.Key);
+        //NavigationManager.NavigateTo("/breedingRecordList");
+        await ReturnToPreviousUrl.InvokeAsync();
+    }
 
-            //console.Log($"{name} value changed to {str}");
-        }
+    async Task OnClickCancel(string buttonName)
+    {
+        console.Log($"{buttonName} clicked");
+        //NavigationManager.NavigateTo("/breedingRecordList");
+        await ReturnToPreviousUrl.InvokeAsync();
+    }
 
-        void OnChangeBreeder(object value, string name)
-        {
-            var str = value is IEnumerable<object> ? string.Join(", ", (IEnumerable<object>)value) : value;
 
-            //console.Log($"{name} value changed to {str}");
-        }
+    void OnChange(object value, string name)
+    {
+        console.Log($"{name} value changed to {value}");
+    }
 
-        void OnChangeGender(int value, string name)
-        {
-            //console.Log($"{name} value changed to {string.Join(", ", value)}");
-        }
 
-        void OnChangePublic(bool value, string name)
-        {
-            //console.Log($"{name} value changed to {value}");
-        }
-        }
+}

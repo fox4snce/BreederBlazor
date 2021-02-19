@@ -1,5 +1,134 @@
-﻿<h3>ContactNoteForm</h3>
+﻿@using BreederBlazor.Services.Auth
+@using System.Net.Http
+@using BreederBlazor.Services.Util
+@using BreederBlazor.Models.Base
+@using BreederBlazor.Services.BreedingRecords
+@using BreederBlazor.Services.Contacts
+@using BreederBlazor.Services.Litters
+@using BreederBlazor.Services.Notes
+@using BreederBlazor.Models.Dtos.NoteDto
 
-@code {
+@inject IAuthService AuthService
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IBreedingRecordService BreedingRecordService
+@inject IContactService ContactService
+@inject ILitterService LitterService
+@inject INoteService NoteService 
+
+@if (Loaded)
+{
+    <div class="container" style="margin: 20px 7px 20px 4px;">
+
+        @*
+            Was for subject/title of note but realized don't need.
+            
+            <div class="row">
+            <div class="col BreedingRecordFormCol">
+                <RadzenTextBox @bind-Value=@note.Title Change=@(args => OnChange(args, "TextBox")) />
+            </div>
+        </div>*@
+
+        <div class="row">
+            <div class="col">
+                <RadzenHtmlEditor @bind-Value=@note.Body style="height: 500px; margin-bottom: 1rem;" UploadUrl="upload/image" Change=@(args => OnChange(args, "html editor")) Paste=@OnPaste Execute=@OnExecute>
+                    <RadzenHtmlEditorUndo />
+                    <RadzenHtmlEditorRedo />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorBold />
+                    <RadzenHtmlEditorItalic />
+                    <RadzenHtmlEditorUnderline />
+                    <RadzenHtmlEditorStrikeThrough />
+                    <RadzenHtmlEditorSeparator />
+                    <RadzenHtmlEditorColor />
+                    <RadzenHtmlEditorBackground />
+                    <RadzenHtmlEditorRemoveFormat />
+                </RadzenHtmlEditor>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <RadzenButton Click=@(args => OnClickSubmit("Button with text")) Text="Submit" Style="margin-bottom: 20px; background-color: forestgreen;" />
+            </div>
+            <div class="col">
+                <RadzenButton Click=@(args => OnClickCancel("Button with text")) Text="Cancel" Style="margin-bottom: 20px; background-color: red;" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6">
+        <EventConsole @ref=@console />
+    </div>
+
+    <RadzenDialog />
+
+    <RadzenNotification />
+
+}
+else
+{
+    <h3>Loading...</h3>
+}
+
+@code
+{
+    [Parameter]
+    public int BreedingRecordId { get; set; } = 0;
+
+    [Parameter]
+    public EventCallback ReturnToPreviousUrl { get; set; }
+
+
+    CreateNoteDto note;
+
+    private bool Loaded = false;
+
+    EventConsole console;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        note = new CreateNoteDto();
+
+        if(BreedingRecordId == 0)
+        {
+            await ReturnToPreviousUrl.InvokeAsync();
+        }
+
+        Loaded = true;
+    }
+
+
+    async Task OnClickSubmit(string buttonName)
+    {
+        CreateNoteDto n = new CreateNoteDto();
+        n.BreedingRecordId = BreedingRecordId;
+        n.Body = note.Body;
+        await NoteService.CreateNote(note, AuthService.user.Key);
+        await ReturnToPreviousUrl.InvokeAsync();
+    }
+
+    async Task OnClickCancel(string buttonName)
+    {
+        //console.Log($"{buttonName} clicked");
+        await ReturnToPreviousUrl.InvokeAsync();
+    }
+
+
+    void OnChange(object value, string name)
+    {
+        console.Log($"{name} value changed to {value}");
+    }
+
+    void OnPaste(HtmlEditorPasteEventArgs args)
+    {
+        console.Log($"Paste: {args.Html}");
+    }
+
+    void OnExecute(HtmlEditorExecuteEventArgs args)
+    {
+        console.Log($"Execute: {args.CommandName}");
+    }
 
 }

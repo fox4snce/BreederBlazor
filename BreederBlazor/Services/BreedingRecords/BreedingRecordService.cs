@@ -21,9 +21,15 @@ namespace BreederBlazor.Services.BreedingRecords
             Http = _http;
         }
 
-        public async Task<List<BreedingRecord>> CreateBreedingRecord(CreateBreedingRecordDto newBreedingRecord)
+        public async Task<List<BreedingRecord>> CreateBreedingRecord(CreateBreedingRecordDto newBreedingRecord, string key)
         {
-            throw new NotImplementedException();
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
+
+            var response = await Http.PostAsJsonAsync<CreateBreedingRecordDto>("http://localhost:5050/BreedingRecord", newBreedingRecord);
+
+            ServiceResponse<List<BreedingRecord>> content = await response.Content.ReadFromJsonAsync<ServiceResponse<List<BreedingRecord>>>();
+
+            return content.Data;
         }
 
         public async Task<List<BreedingRecord>> DeleteBreedingRecord(int id)

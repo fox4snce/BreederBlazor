@@ -16,8 +16,8 @@ namespace BreederBlazor.Models.Base
 
         // Data
         public bool Medical { get; set; }
-        public string Title { get; set; }
-        public string Body { get; set; }
+        public string Title { get; set; } = "";
+        public string Body { get; set; } = "";
 
         
     }

@@ -1,4 +1,4 @@
-﻿@page "/home"
+﻿@page "/breedingRecordList"
 
 @using Services
 @using BreederBlazor.Services.Auth
@@ -6,10 +6,11 @@
 @using BreederBlazor.Services.Util
 @using System.Net.Http.Headers
 @using BreederBlazor.Models.Base
-@using Radzen
-@using Radzen.Blazor
-
 @using BreederBlazor.Services.BreedingRecords
+@using BreederBlazor.Components
+@using BreederBlazor.Components.Forms
+
+@inherits BasePageComponent
 
 @inject IAuthService AuthService
 @inject HttpClient Http
@@ -19,17 +20,19 @@
 @if (Loaded)
 {
 
+    
+    <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New Breeding Record" Style="margin-bottom: 20px; width: 150px" />
 
-    <BreederBlazor.Components.Forms.BreedingRecordForm  />
+    <BreedingRecordNoteForm />
 
-<RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterMode="FilterMode.Advanced" AllowPaging="true" PageSize="4"
-            AllowSorting="true" Data="@breedingRecords.AsQueryable()" TItem="BreedingRecord" Value="@Record" ColumnWidth="200px">
-    <Columns>
+    <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterMode="FilterMode.Advanced" AllowPaging="false" PageSize="4"
+                AllowSorting="true" Data="@breedingRecords.AsQueryable()" TItem="BreedingRecord" Value="@Record" ColumnWidth="200px">
+        <Columns>
             <RadzenGridColumn TItem="BreedingRecord" Property="Name" Title="Name">
                 <Template Context="data">
                     <div @onclick="(() => GoToBreedingRecordDetails(data.Id))">@data.Name</div>
                 </Template>
-                </RadzenGridColumn>
+            </RadzenGridColumn>
 
             <RadzenGridColumn TItem="BreedingRecord" Property="BirthDate" Title="Birth Date">
                 <Template Context="data">
@@ -47,16 +50,14 @@
             <RadzenGridColumn TItem="BreedingRecord" Property="Breeder.Name" Title="Breeder" />
         </Columns>
 
-</RadzenGrid>
+    </RadzenGrid>
 
 
-    
+
 }
 
 
 @code {
-
-    private bool Loaded = false;
 
     private List<BreedingRecord> breedingRecords;
 
@@ -64,36 +65,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (AuthService.user.Key != "" && AuthService.user.Key != null)
-        {
+        base.OnInitialized();
 
+        PageHistory.PushPage("/");
 
-
-            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", AuthService.user.Key);
-
-            var response = await Http.GetAsync("http://localhost:5050/auth/Verify");
-
-            if (!response.IsSuccessStatusCode)
-            {
-                AuthService.user.Username = "";
-                AuthService.user.Key = "";
-                NavigationManager.NavigateTo("/");
-            }
-            else
-            {
-                breedingRecords = await BreedingRecordService.GetAllBreedingRecords(AuthService.user.Key);
-            }
-        }
-        else
-        {
-            NavigationManager.NavigateTo("/");
-        }
+        breedingRecords = await BreedingRecordService.GetAllBreedingRecords(AuthService.user.Key);
 
         Loaded = true;
     }
 
     private void GoToBreedingRecordDetails(int id)
     {
+        
         NavigationManager.NavigateTo("/breedingRecord/view/" + id.ToString());
+    }
+
+    void OnClickNewBreedingRecord(string buttonName)
+    {
+        PageHistory.PushPage("/breedingRecordList");
+        NavigationManager.NavigateTo("/createBreedingRecord");
     }
 }
