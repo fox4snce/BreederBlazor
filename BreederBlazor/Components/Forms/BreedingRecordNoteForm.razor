@@ -14,21 +14,21 @@
 @inject IBreedingRecordService BreedingRecordService
 @inject IContactService ContactService
 @inject ILitterService LitterService
-@inject INoteService NoteService 
+@inject INoteService NoteService
 
 @if (Loaded)
 {
     <div class="container" style="margin: 20px 7px 20px 4px;">
 
         @*
-            Was for subject/title of note but realized don't need.
-            
-            <div class="row">
-            <div class="col BreedingRecordFormCol">
-                <RadzenTextBox @bind-Value=@note.Title Change=@(args => OnChange(args, "TextBox")) />
-            </div>
-        </div>*@
+                Was for subject/title of note but realized don't need.
 
+                <div class="row">
+                <div class="col BreedingRecordFormCol">
+                    <RadzenTextBox @bind-Value=@note.Title Change=@(args => OnChange(args, "TextBox")) />
+                </div>
+            </div>*@
+        
         <div class="row">
             <div class="col">
                 <RadzenHtmlEditor @bind-Value=@note.Body style="height: 500px; margin-bottom: 1rem;" UploadUrl="upload/image" Change=@(args => OnChange(args, "html editor")) Paste=@OnPaste Execute=@OnExecute>
@@ -91,7 +91,7 @@ else
 
         note = new CreateNoteDto();
 
-        if(BreedingRecordId == 0)
+        if (BreedingRecordId == 0)
         {
             await ReturnToPreviousUrl.InvokeAsync();
         }

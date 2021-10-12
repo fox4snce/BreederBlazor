@@ -20,12 +20,18 @@ namespace BreederBlazor.Services.Litters
             Http = _http;
         }
 
-        public async Task<List<Litter>> CreateLitter(CreateLitterDto newLitter)
+        public async Task<List<Litter>> CreateLitter(CreateLitterDto newLitter, string key)
         {
-            throw new NotImplementedException();
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
+
+            var response = await Http.PostAsJsonAsync<CreateLitterDto>("http://localhost:5050/Litter", newLitter);
+
+            ServiceResponse<List<Litter>> content = await response.Content.ReadFromJsonAsync<ServiceResponse<List<Litter>>>();
+
+            return content.Data;
         }
 
-        public async Task<List<Litter>> DeleteLitter(int id)
+        public async Task<List<Litter>> DeleteLitter(int id, string key)
         {
             throw new NotImplementedException();
         }
@@ -41,7 +47,7 @@ namespace BreederBlazor.Services.Litters
             return content.Data;
         }
 
-        public async Task<Litter> GetLitterById(string key, int id)
+        public async Task<Litter> GetLitterById(int id, string key)
         {
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
 
@@ -52,7 +58,7 @@ namespace BreederBlazor.Services.Litters
             return content.Data;
         }
 
-        public async Task<Litter> UpdateLitter(UpdateLitterDto updatedLitter)
+        public async Task<Litter> UpdateLitter(UpdateLitterDto updatedLitter, string key)
         {
             throw new NotImplementedException();
         }

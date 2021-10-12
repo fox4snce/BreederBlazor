@@ -21,12 +21,18 @@ namespace BreederBlazor.Services.Contacts
             Http = _http;
         }
 
-        public async Task<List<Contact>> CreateContact(CreateContactDto newContact)
+        public async Task<List<Contact>> CreateContact(CreateContactDto newContact, string key)
         {
-            throw new NotImplementedException();
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
+
+            var response = await Http.PostAsJsonAsync<CreateContactDto>("http://localhost:5050/Contact", newContact);
+
+            ServiceResponse<List<Contact>> content = await response.Content.ReadFromJsonAsync<ServiceResponse<List<Contact>>>();
+
+            return content.Data;
         }
 
-        public async Task<List<Contact>> DeleteContact(int id)
+        public async Task<List<Contact>> DeleteContact(int id, string key)
         {
             throw new NotImplementedException();
         }
@@ -42,7 +48,7 @@ namespace BreederBlazor.Services.Contacts
             return content.Data;
         }
 
-        public async Task<Contact> GetContactById(string key, int id)
+        public async Task<Contact> GetContactById(int id, string key)
         {
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
 
@@ -53,7 +59,7 @@ namespace BreederBlazor.Services.Contacts
             return content.Data;
         }
 
-        public async Task<Contact> UpdateContact(UpdateContactDto updatedContact)
+        public async Task<Contact> UpdateContact(UpdateContactDto updatedContact, string key)
         {
             throw new NotImplementedException();
         }

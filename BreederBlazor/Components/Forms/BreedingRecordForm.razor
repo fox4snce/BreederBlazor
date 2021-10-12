@@ -1,4 +1,6 @@
-﻿@using BreederBlazor.Services.Auth
+﻿@page "/createBreedingRecord"
+
+@using BreederBlazor.Services.Auth
 @using System.Net.Http
 @using BreederBlazor.Services.Util
 @using BreederBlazor.Models.Base
@@ -6,6 +8,8 @@
 @using BreederBlazor.Services.Contacts
 @using BreederBlazor.Services.Litters
 @using BreederBlazor.Models.Dtos.BreedingRecordDto
+
+@inherits BasePageComponent
 
 @inject IAuthService AuthService
 @inject HttpClient Http
@@ -99,10 +103,8 @@ else
 
 @code
 {
-    [Parameter]
-    public EventCallback ReturnToPreviousUrl { get; set; }
 
-    DateTime? Birthday = DateTime.Now;
+    
     IEnumerable<Contact> contacts;
     IEnumerable<Litter> litters;
 
@@ -116,6 +118,9 @@ else
     {
 
         createBreedingRecordDto = new CreateBreedingRecordDto();
+
+        createBreedingRecordDto.Birthday = DateTime.Now;
+        createBreedingRecordDto.DateOfAcquisition = DateTime.Now;
 
         // Load contacts
         contacts = await ContactService.GetAllContacts(AuthService.user.Key);
@@ -131,14 +136,16 @@ else
     {
         await BreedingRecordService.CreateBreedingRecord(createBreedingRecordDto, AuthService.user.Key);
         //NavigationManager.NavigateTo("/breedingRecordList");
-        await ReturnToPreviousUrl.InvokeAsync();
+        NavigationManager.NavigateTo(PageHistory.PopPage());
+
+
     }
 
     async Task OnClickCancel(string buttonName)
     {
         console.Log($"{buttonName} clicked");
         //NavigationManager.NavigateTo("/breedingRecordList");
-        await ReturnToPreviousUrl.InvokeAsync();
+        NavigationManager.NavigateTo(PageHistory.PopPage());
     }
 
 

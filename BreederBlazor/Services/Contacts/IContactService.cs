@@ -10,17 +10,17 @@ namespace BreederBlazor.Services.Contacts
     public interface IContactService
     {
         // Create
-        Task<List<Contact>> CreateContact(CreateContactDto newContact);
+        Task<List<Contact>> CreateContact(CreateContactDto newContact, string key);
 
         // Read
         Task<List<Contact>> GetAllContacts(string key);
 
-        Task<Contact> GetContactById(string key, int id);
+        Task<Contact> GetContactById(int id, string key);
 
         // Update
-        Task<Contact> UpdateContact(UpdateContactDto updatedContact);
+        Task<Contact> UpdateContact(UpdateContactDto updatedContact, string key);
 
         // Delete
-        Task<List<Contact>> DeleteContact(int id);
+        Task<List<Contact>> DeleteContact(int id, string key);
     }
 }

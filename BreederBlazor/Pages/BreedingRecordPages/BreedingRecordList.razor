@@ -8,7 +8,6 @@
 @using BreederBlazor.Models.Base
 @using BreederBlazor.Services.BreedingRecords
 @using BreederBlazor.Components
-@using BreederBlazor.Components.Forms
 
 @inherits BasePageComponent
 
@@ -19,11 +18,18 @@
 
 @if (Loaded)
 {
+    <div>uri @NavigationManager.ToBaseRelativePath(NavigationManager.Uri)</div>
 
-    
     <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New Breeding Record" Style="margin-bottom: 20px; width: 150px" />
 
-    <BreedingRecordNoteForm />
+    <RadzenButton Click=@(args => OnClickNewContactRecord("Button with text")) Text="New Contact Record" Style="margin-bottom: 20px; width: 150px" />
+
+    @*<RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New Litter Record" Style="margin-bottom: 20px; width: 150px" />
+
+    <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New Note Record" Style="margin-bottom: 20px; width: 150px" />
+
+    <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New ContactNote Record" Style="margin-bottom: 20px; width: 150px" />*@
+
 
     <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterMode="FilterMode.Advanced" AllowPaging="false" PageSize="4"
                 AllowSorting="true" Data="@breedingRecords.AsQueryable()" TItem="BreedingRecord" Value="@Record" ColumnWidth="200px">
@@ -76,13 +82,19 @@
 
     private void GoToBreedingRecordDetails(int id)
     {
-        
+
         NavigationManager.NavigateTo("/breedingRecord/view/" + id.ToString());
     }
 
     void OnClickNewBreedingRecord(string buttonName)
     {
-        PageHistory.PushPage("/breedingRecordList");
+        PushCurrentPageToHistory();
         NavigationManager.NavigateTo("/createBreedingRecord");
+    }
+
+    void OnClickNewContactRecord(string buttonName)
+    {
+        PushCurrentPageToHistory();
+        NavigationManager.NavigateTo("/createContactRecord");
     }
 }

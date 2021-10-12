@@ -6,12 +6,18 @@
 @using BreederBlazor.Services.BreedingRecords
 @using BreederBlazor.Components
 
+@using BreederBlazor.Components.Forms
+
 @inherits BasePageComponent
 
 @inject IBreedingRecordService BreedingRecordService
 
 @if (Loaded && Record != null)
 {
+    <RadzenButton Click=@(args => OnClickNewBreedingRecordNote("Button with text")) Text="New Breeding Record Note" Style="margin-bottom: 20px; width: 150px" />
+
+    <BreedingRecordNoteForm />
+
     <div class="row" style="margin-bottom: 8px; padding: 4px; background-color: azure;">
         <div class="col" style="text-align: center;">
             <strong>@Record.Name</strong>
@@ -102,10 +108,6 @@
     [Parameter]
     public int id { get; set; }
 
-
-
-
-
     private BreedingRecord Record;
 
     protected override async Task OnInitializedAsync()
@@ -127,6 +129,12 @@
     void OnChange(int index)
     {
         //console.Log($"Tab with index {index} was selected.");
+    }
+
+    void OnClickNewBreedingRecordNote(string buttonName)
+    {
+        PageHistory.PushPage("/breedingRecord/view/" + id);
+        NavigationManager.NavigateTo("/createBreedingRecordNote");
     }
 
 }

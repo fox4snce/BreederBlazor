@@ -1,5 +1,201 @@
-﻿<h3>ContactForm</h3>
+﻿@page "/createContactRecord"
 
-@code {
+@using BreederBlazor.Services.Auth
+@using System.Net.Http
+@using BreederBlazor.Services.Util
+@using BreederBlazor.Models.Base
+@using BreederBlazor.Services.BreedingRecords
+@using BreederBlazor.Services.Contacts
+@using BreederBlazor.Services.Litters
+@using BreederBlazor.Models.Dtos.ContactDto
+
+@inherits BasePageComponent
+
+@inject IAuthService AuthService
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IBreedingRecordService BreedingRecordService
+@inject IContactService ContactService
+@inject ILitterService LitterService
+
+@if (Loaded)
+{
+<div class="container" style="margin: 20px 7px 20px 4px;">
+
+    <div class="row">
+        <div class="col BreedingRecordFormCol">
+            <h3>First Name</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.FirstName Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+        <div class="col BreedingRecordFormCol">
+            <h3>Last Name</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.LastName Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h3>Contact Type</h3>
+
+            <RadzenSelectBar @bind-Value=@currentContactType TValue="int" Change=@(args => OnChangeContactType(args, "SelectBar with single selection"))>
+                <Items>
+                    @for (int i = 0; i < contactTypes.Count; i++)
+                    {
+                        <RadzenSelectBarItem Text="@contactTypes[i].ToString()" Value="@i" />
+                    }
+                </Items>
+            </RadzenSelectBar>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col BreedingRecordFormCol">
+            <h3>Email</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.Email Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col BreedingRecordFormCol">
+            <h3>Address Line 1</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.Address Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col BreedingRecordFormCol">
+            <h3>Address Line 2</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.Address2 Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col BreedingRecordFormCol">
+            <h3>Address Line 2</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.Address2 Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col BreedingRecordFormCol">
+            <h3>City</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.City Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+        <div class="col BreedingRecordFormCol">
+            <h3>State</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.State Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+        <div class="col BreedingRecordFormCol">
+            <h3>Zip Code</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.ZipCode Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col BreedingRecordFormCol">
+            <h3>Country</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.Country Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col BreedingRecordFormCol">
+            <h3>Phone</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.PhoneNumber Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+        <div class="col BreedingRecordFormCol">
+            <h3>Cell</h3>
+            <RadzenTextBox @bind-Value=@createContactDto.PhoneNumber Change=@(args => OnChange(args, "TextBox")) />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col">
+            <h3>Make this record public? <RadzenCheckBox @bind-Value=@createContactDto.Public TValue="bool" Change=@(args => OnChange(args, "CheckBox1 CheckBox")) /></h3>
+
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <RadzenButton Click=@(args => OnClickSubmit("Button with text")) Text="Submit" Style="margin-bottom: 20px; background-color: forestgreen;" />
+        </div>
+        <div class="col">
+            <RadzenButton Click=@(args => OnClickCancel("Button with text")) Text="Cancel" Style="margin-bottom: 20px; background-color: red;" />
+        </div>
+    </div>
+</div>
+
+    <div class="col-xl-6">
+        <EventConsole @ref=@console />
+    </div>
+
+}
+else
+{
+    <h3>Loading...</h3>
+}
+
+@code
+{
+
+    DateTime? Birthday = DateTime.Now;
+    IEnumerable<Contact> contacts;
+    IEnumerable<Litter> litters;
+
+    List<ContactType> contactTypes;
+    int currentContactType = 0;
+
+    CreateContactDto createContactDto;
+
+    private bool Loaded = false;
+
+    EventConsole console;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        createContactDto = new CreateContactDto();
+
+        // Load contacts
+        contacts = await ContactService.GetAllContacts(AuthService.user.Key);
+
+        // Load litters
+        litters = await LitterService.GetAllLitters(AuthService.user.Key);
+
+        contactTypes = Enum.GetValues(typeof(ContactType)).Cast<ContactType>().ToList();
+
+        Loaded = true;
+    }
+
+
+    async Task OnClickSubmit(string buttonName)
+    {
+        await ContactService.CreateContact(createContactDto, AuthService.user.Key);
+        //NavigationManager.NavigateTo("/breedingRecordList");
+        NavigationManager.NavigateTo(PageHistory.PopPage());
+
+
+    }
+
+    async Task OnClickCancel(string buttonName)
+    {
+        console.Log($"{buttonName} clicked");
+        //NavigationManager.NavigateTo("/breedingRecordList");
+        NavigationManager.NavigateTo(PageHistory.PopPage());
+    }
+
+
+    void OnChange(object value, string name)
+    {
+        console.Log($"{name} value changed to {value}");
+    }
+
+    void OnChangeContactType(object value, string name)
+    {
+        console.Log($"{name} value changed to {value}");
+        createContactDto.Type = (ContactType)value;
+    }
+
 
 }

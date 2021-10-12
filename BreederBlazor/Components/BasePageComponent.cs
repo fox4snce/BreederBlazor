@@ -61,5 +61,10 @@ namespace BreederBlazor.Components
                 NavigationManager.NavigateTo("/");
             }
         }
+
+        protected void PushCurrentPageToHistory()
+        {
+            PageHistory.PushPage("/" + NavigationManager.ToBaseRelativePath(NavigationManager.Uri));
+        }
     }
 }
