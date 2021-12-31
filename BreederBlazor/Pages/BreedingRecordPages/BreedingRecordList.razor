@@ -18,17 +18,17 @@
 
 @if (Loaded)
 {
-    <div>uri @NavigationManager.ToBaseRelativePath(NavigationManager.Uri)</div>
+    <div> uri @NavigationManager.ToBaseRelativePath(NavigationManager.Uri)</div>
 
-    <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New Breeding Record" Style="margin-bottom: 20px; width: 150px" />
+    <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New Breeding Record" Style="margin-bottom: 20px; width: 300px" />
 
-    <RadzenButton Click=@(args => OnClickNewContactRecord("Button with text")) Text="New Contact Record" Style="margin-bottom: 20px; width: 150px" />
+    <RadzenButton Click=@(args => OnClickNewContact("Button with text")) Text="New Contact" Style="margin-bottom: 20px; width: 300px" />
 
-    @*<RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New Litter Record" Style="margin-bottom: 20px; width: 150px" />
+    <RadzenButton Click=@(args => OnClickNewLitter("Button with text")) Text="New Litter" Style="margin-bottom: 20px; width: 300px" />
 
-    <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New Note Record" Style="margin-bottom: 20px; width: 150px" />
+    @*<RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New Note Record" Style="margin-bottom: 20px; width: 300px" />
 
-    <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New ContactNote Record" Style="margin-bottom: 20px; width: 150px" />*@
+        <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) Text="New ContactNote Record" Style="margin-bottom: 20px; width: 300px" />*@
 
 
     <RadzenGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterMode="FilterMode.Advanced" AllowPaging="false" PageSize="4"
@@ -71,9 +71,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
 
-        PageHistory.PushPage("/");
+        breedingRecords = new List<BreedingRecord>();
 
         breedingRecords = await BreedingRecordService.GetAllBreedingRecords(AuthService.user.Key);
 
@@ -92,9 +92,15 @@
         NavigationManager.NavigateTo("/createBreedingRecord");
     }
 
-    void OnClickNewContactRecord(string buttonName)
+    void OnClickNewContact(string buttonName)
     {
         PushCurrentPageToHistory();
-        NavigationManager.NavigateTo("/createContactRecord");
+        NavigationManager.NavigateTo("/createContact");
+    }
+
+    void OnClickNewLitter(string buttonName)
+    {
+        PushCurrentPageToHistory();
+        NavigationManager.NavigateTo("/createLitter");
     }
 }

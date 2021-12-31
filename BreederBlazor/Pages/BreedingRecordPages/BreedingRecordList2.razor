@@ -1,0 +1,171 @@
+﻿@page "/breedingRecord/ListView"
+
+@using Services
+@using BreederBlazor.Services.Auth
+@using System.Net.Http
+@using BreederBlazor.Services.Util
+@using System.Net.Http.Headers
+@using BreederBlazor.Models.Base
+@using BreederBlazor.Services.BreedingRecords
+@using BreederBlazor.Components
+@using BreederBlazor.Components.Forms
+@using BreederBlazor.Components.Views
+
+@inherits BasePageComponent
+
+@inject IAuthService AuthService
+@inject HttpClient Http
+@inject NavigationManager NavigationManager
+@inject IBreedingRecordService BreedingRecordService
+
+@if (Loaded)
+{
+    <div class="row" Style="margin-bottom: 20px; margin-top: 20px;">
+        <div class="col-1">
+            <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) ButtonStyle="ButtonStyle.Secondary" >[New]</RadzenButton>
+        </div>
+        <div class="col-1">
+            <RadzenButton Click=@(args => OnClickEditBreedingRecord("Button with text")) ButtonStyle="ButtonStyle.Secondary" >[Edit]</RadzenButton>
+        </div>
+        <div class="col-1">
+            <RadzenButton Click=@(args => OnClickDeleteBreedingRecord("Button with text")) ButtonStyle="ButtonStyle.Secondary" >[Delete]</RadzenButton>
+        </div>
+    </div>
+    
+    
+
+    <div class="row">
+        <div class="col-4">
+            
+            <RadzenDataGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterMode="FilterMode.Advanced" AllowPaging="false" PageSize="4"
+                AllowSorting="true" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedRecord Data="@breedingRecords.AsQueryable()" TItem="BreedingRecord" ColumnWidth="200px" >
+                <Columns>
+                    <RadzenDataGridColumn TItem="BreedingRecord" Property="Name" Title="Name" >
+                        <Template Context="data">
+                            <div >@data.Name</div>
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="BreedingRecord" Property="Birthday" Title="Birth Date" >
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.Birthday)
+                        </Template>
+                    </RadzenDataGridColumn>
+
+                    <RadzenDataGridColumn TItem="BreedingRecord" Property="DateOfAcquisition" Title="Acquired">
+                        <Template Context="data">
+                            @String.Format("{0:d}", data.DateOfAcquisition)
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+
+            </RadzenDataGrid>
+        </div>
+
+        @if (secondColumnMode == SECOND_COLUMN_MODE.newRecord)
+        {
+            <div class="col">
+                <BreedingRecordForm OnClickCloseCallback="@OnClickCloseBreedingRecordForm" />
+            </div>
+
+        } else if (secondColumnMode == SECOND_COLUMN_MODE.editRecord)
+        {
+            @if(selectedRecord.Count > 0)
+            {
+                <div class="col">
+                    <BreedingRecordForm RecordToUpdate="selectedRecord[0]" OnClickCloseCallback="@OnClickCloseBreedingRecordForm" />
+                </div>    
+            }
+        } else
+        {
+            @if(record != null)
+            {
+                <div class="col">
+                    <BreedingRecordComponent Record="selectedRecord[0]" />
+                </div>    
+            }    
+        }
+    </div>
+    
+}
+
+
+@code {
+
+    private List<BreedingRecord> breedingRecords;
+
+    private IList<BreedingRecord> selectedRecord;
+
+    private BreedingRecord record;
+
+    private SECOND_COLUMN_MODE secondColumnMode = SECOND_COLUMN_MODE.recordInformation;
+
+    private enum SECOND_COLUMN_MODE
+    {
+        newRecord,
+        editRecord,
+        recordInformation
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        breedingRecords = new List<BreedingRecord>();
+
+        breedingRecords = await BreedingRecordService.GetAllBreedingRecords(AuthService.user.Key);
+
+        if(breedingRecords.Count > 0)
+        {
+            selectedRecord = breedingRecords.Take(1).ToList();
+            record = selectedRecord[0];
+        }
+
+        Loaded = true;
+    }
+
+    void ClearSelection()
+    {
+        selectedRecord = null;
+    }
+
+    private void ChangeRecord(BreedingRecord br)
+    {
+        record = br;
+    }
+
+
+    void OnClickNewBreedingRecord(string buttonName)
+    {
+        secondColumnMode = SECOND_COLUMN_MODE.newRecord;
+    }
+
+    void OnClickEditBreedingRecord(string buttonName)
+    {
+        secondColumnMode = SECOND_COLUMN_MODE.editRecord;
+    }
+
+    async Task OnClickCloseBreedingRecordForm()
+    {
+        await RefreshData();
+        secondColumnMode = SECOND_COLUMN_MODE.recordInformation;
+    }
+
+    async Task OnClickDeleteBreedingRecord(string buttonName)
+    {
+        await BreedingRecordService.DeleteBreedingRecord(selectedRecord[0].Id, AuthService.user.Key);
+        await RefreshData();
+    }
+
+    
+    async Task RefreshData()
+    {
+        breedingRecords = await BreedingRecordService.GetAllBreedingRecords(AuthService.user.Key);
+
+        if(breedingRecords.Count > 0)
+        {
+            selectedRecord = breedingRecords.Take(1).ToList();
+            record = selectedRecord[0];
+        }
+    }
+}

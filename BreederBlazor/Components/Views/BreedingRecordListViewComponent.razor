@@ -1,0 +1,53 @@
+﻿@using BreederBlazor.Models.Base
+
+@if (Loaded)
+{
+    <div class="col">
+
+    
+    @if(records != null && records.Count > 0)
+    {
+        @foreach(BreedingRecord record in records)
+        {
+            <div class="row" @onclick="(async () => await OnClickSelectBreedingRecord(record))" >
+                @record.Name
+            </div>
+        }    
+    }
+    else
+    {
+        <div class="row">
+            There are no records.
+        </div>
+    }
+    </div>
+}
+
+@code {
+    [Parameter]
+    public List<BreedingRecord> records { get; set; }
+
+    [Parameter]
+    public BreedingRecord Record { get; set; }
+
+    [Parameter]
+    public EventCallback<BreedingRecord> RecordChanged { get; set; }
+
+    private bool Loaded = false;
+
+    private bool FullView = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        Loaded = true;
+    }
+
+    async Task OnClickSelectBreedingRecord(BreedingRecord br)
+    {
+        Record = br;
+        Console.WriteLine(Record.Name);
+        await RecordChanged.InvokeAsync(Record);
+
+    }
+}

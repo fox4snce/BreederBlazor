@@ -8,23 +8,28 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace BreederBlazor.Services.Litters
 {
     public class LitterService : ILitterService
     {
         private readonly HttpClient Http;
+        private readonly IConfiguration config;
+        private string ApiUrl;
 
-        public LitterService(HttpClient _http)
+        public LitterService(HttpClient _http, IConfiguration _config)
         {
             Http = _http;
+            config = _config;
+            ApiUrl = config.GetSection("api").Value;
         }
 
         public async Task<List<Litter>> CreateLitter(CreateLitterDto newLitter, string key)
         {
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
 
-            var response = await Http.PostAsJsonAsync<CreateLitterDto>("http://localhost:5050/Litter", newLitter);
+            var response = await Http.PostAsJsonAsync<CreateLitterDto>(ApiUrl + "/Litter", newLitter);
 
             ServiceResponse<List<Litter>> content = await response.Content.ReadFromJsonAsync<ServiceResponse<List<Litter>>>();
 
@@ -40,7 +45,7 @@ namespace BreederBlazor.Services.Litters
         {
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
 
-            var response = await Http.GetAsync("http://localhost:5050/Litter");
+            var response = await Http.GetAsync(ApiUrl + "/Litter");
 
             ServiceResponse<List<Litter>> content = await response.Content.ReadFromJsonAsync<ServiceResponse<List<Litter>>>();
 
@@ -51,7 +56,7 @@ namespace BreederBlazor.Services.Litters
         {
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
 
-            var response = await Http.GetAsync("http://localhost:5050/Litter/" + id.ToString());
+            var response = await Http.GetAsync(ApiUrl + "/Litter/" + id.ToString());
 
             ServiceResponse<Litter> content = await response.Content.ReadFromJsonAsync<ServiceResponse<Litter>>();
 

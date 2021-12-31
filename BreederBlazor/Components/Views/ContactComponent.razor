@@ -3,20 +3,20 @@
 @if (Loaded)
 {
     <RadzenCard Style="">
-                    <div class="row"><div class="col" style="text-align: right;">Name:</div><div class="col">@contactRecord.FirstName @contactRecord.LastName</div></div>
-                    <div class="row"><div class="col" style="text-align: right;">Type:</div><div class="col">@contactRecord.Type</div></div>
-                    <div class="row"><div class="col" style="text-align: right;">Email:</div><div class="col">@contactRecord.Email</div></div>
-                    <div class="row"><div class="col" style="text-align: right;">Phone:</div><div class="col">@contactRecord.PhoneNumber</div></div>
-                    <div class="row"><div class="col" style="text-align: right;">Cell:</div><div class="col">@contactRecord.CellPhone</div></div>
-                    <div class="row"><div class="col" style="text-align: right;">Address:</div><div class="col">@contactRecord.Address</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">Name:</div><div class="col">@contactRecord.FirstName @contactRecord.LastName</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">Type:</div><div class="col">@contactRecord.Type</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">Email:</div><div class="col">@contactRecord.Email</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">Phone:</div><div class="col">@contactRecord.PhoneNumber</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">Cell:</div><div class="col">@contactRecord.CellPhone</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">Address:</div><div class="col">@contactRecord.Address</div></div>
                     @if (contactRecord.Address2 != null && contactRecord.Address2 != "")
                     {
-                        <div class="row"><div class="col" style="text-align: right;">Address 2:</div><div class="col">@contactRecord.Address2</div></div>
+                        <div class="row"><div class="col-2" style="text-align: right;">Address 2:</div><div class="col">@contactRecord.Address2</div></div>
                     }
-                    <div class="row"><div class="col" style="text-align: right;">City:</div><div class="col">@contactRecord.City</div></div>
-                    <div class="row"><div class="col" style="text-align: right;">State:</div><div class="col">@contactRecord.State</div></div>
-                    <div class="row"><div class="col" style="text-align: right;">Zip:</div><div class="col">@contactRecord.ZipCode</div></div>
-                    <div class="row"><div class="col" style="text-align: right;">Country:</div><div class="col">@contactRecord.Country</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">City:</div><div class="col">@contactRecord.City</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">State:</div><div class="col">@contactRecord.State</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">Zip:</div><div class="col">@contactRecord.ZipCode</div></div>
+                    <div class="row"><div class="col-2" style="text-align: right;">Country:</div><div class="col">@contactRecord.Country</div></div>
 
                 </RadzenCard>
             

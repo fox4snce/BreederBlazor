@@ -1,6 +1,4 @@
-﻿@page "/createBreedingRecord"
-
-@using BreederBlazor.Services.Auth
+﻿@using BreederBlazor.Services.Auth
 @using System.Net.Http
 @using BreederBlazor.Services.Util
 @using BreederBlazor.Models.Base
@@ -86,7 +84,7 @@
                 <RadzenButton Click=@(args => OnClickSubmit("Button with text")) Text="Submit" Style="margin-bottom: 20px; background-color: forestgreen;" />
             </div>
             <div class="col">
-                <RadzenButton Click=@(args => OnClickCancel("Button with text")) Text="Cancel" Style="margin-bottom: 20px; background-color: red;" />
+                <RadzenButton Click="OnClickCloseCallback" Text="Cancel" Style="margin-bottom: 20px; background-color: red;" />
             </div>
         </div>
     </div>
@@ -103,12 +101,19 @@ else
 
 @code
 {
+    [Parameter]
+    public BreedingRecord RecordToUpdate {  get;  set; }
 
-    
+    [Parameter]
+    public EventCallback OnClickCloseCallback { get; set; }
+
+    private bool updating = false;
+
     IEnumerable<Contact> contacts;
     IEnumerable<Litter> litters;
 
     CreateBreedingRecordDto createBreedingRecordDto;
+    UpdateBreedingRecordDto updatedBreedingRecordDto;
 
     private bool Loaded = false;
 
@@ -116,11 +121,21 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
         createBreedingRecordDto = new CreateBreedingRecordDto();
+        updatedBreedingRecordDto = new UpdateBreedingRecordDto();
 
-        createBreedingRecordDto.Birthday = DateTime.Now;
-        createBreedingRecordDto.DateOfAcquisition = DateTime.Now;
+        if(RecordToUpdate == null)
+        {
+            updating = false;
+            createBreedingRecordDto.Birthday = DateTime.Now;
+            createBreedingRecordDto.DateOfAcquisition = DateTime.Now;    
+        } else
+        {
+            updating = true;
+
+            updatedBreedingRecordDto.Id = RecordToUpdate.Id;
+            createBreedingRecordDto = LoadFromBreedingRecord(RecordToUpdate);
+        }
 
         // Load contacts
         contacts = await ContactService.GetAllContacts(AuthService.user.Key);
@@ -134,25 +149,79 @@ else
 
     async Task OnClickSubmit(string buttonName)
     {
-        await BreedingRecordService.CreateBreedingRecord(createBreedingRecordDto, AuthService.user.Key);
-        //NavigationManager.NavigateTo("/breedingRecordList");
-        NavigationManager.NavigateTo(PageHistory.PopPage());
+        if (!updating)
+        {
+            await BreedingRecordService.CreateBreedingRecord(createBreedingRecordDto, AuthService.user.Key);
+        }
+        else
+        {
+            updatedBreedingRecordDto = AddCBRDTOtoUpdated(createBreedingRecordDto, updatedBreedingRecordDto);
 
+            await BreedingRecordService.UpdateBreedingRecord(updatedBreedingRecordDto, AuthService.user.Key);
+        }
 
+        await OnClickCloseCallback.InvokeAsync();
     }
-
-    async Task OnClickCancel(string buttonName)
-    {
-        console.Log($"{buttonName} clicked");
-        //NavigationManager.NavigateTo("/breedingRecordList");
-        NavigationManager.NavigateTo(PageHistory.PopPage());
-    }
-
 
     void OnChange(object value, string name)
     {
         console.Log($"{name} value changed to {value}");
     }
 
+    CreateBreedingRecordDto LoadFromBreedingRecord(BreedingRecord br)
+    {
+        CreateBreedingRecordDto cbr = new CreateBreedingRecordDto();
+
+        cbr.Name = br.Name;
+
+        if(br.Owner != null)
+        {
+            cbr.OwnerId = br.Owner.Id;    
+        }
+
+        cbr.Public = br.Public;
+
+        if (br.BirthLitter != null)
+        {
+            cbr.BirthLitterId = br.BirthLitter.Id;
+        }
+
+        cbr.Birthday = br.Birthday;
+
+        cbr.Sex = (int)br.Sex;
+
+        if(br.Breeder != null)
+        {
+            cbr.BreederId = br.Breeder.Id;    
+        }
+
+        cbr.DateOfAcquisition = br.DateOfAcquisition;
+
+        return cbr;
+    }
+
+    UpdateBreedingRecordDto AddCBRDTOtoUpdated(CreateBreedingRecordDto cbr, UpdateBreedingRecordDto ubr)
+    {
+
+        ubr.Name = cbr.Name;
+
+        ubr.OwnerId = cbr.OwnerId;
+
+        ubr.Public = cbr.Public;
+
+        ubr.BirthLitterId = cbr.BirthLitterId;
+
+
+        ubr.Birthday = cbr.Birthday;
+
+        ubr.Sex = (int)cbr.Sex;
+
+        ubr.BreederId = cbr.BreederId;    
+        
+
+        ubr.DateOfAcquisition = cbr.DateOfAcquisition;
+
+        return ubr;
+    }
 
 }

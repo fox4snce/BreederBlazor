@@ -4,6 +4,7 @@ using BreederBlazor.Services.Contacts;
 using BreederBlazor.Services.Litters;
 using BreederBlazor.Services.Notes;
 using BreederBlazor.Services.PageHistory;
+using BreederBlazor.Services.Util;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +35,7 @@ namespace BreederBlazor
             builder.Services.AddScoped<NotificationService>();
             builder.Services.AddScoped<TooltipService>();
             builder.Services.AddScoped<ContextMenuService>();
+            
             
             builder.Services.AddSingleton(
                 sp => new HttpClient 

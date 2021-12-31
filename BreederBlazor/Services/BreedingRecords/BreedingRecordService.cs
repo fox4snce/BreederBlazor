@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace BreederBlazor.Services.BreedingRecords
 {
@@ -15,33 +16,47 @@ namespace BreederBlazor.Services.BreedingRecords
     {
 
         private readonly HttpClient Http;
+        private readonly IConfiguration config;
+        private string ApiUrl;
 
-        public BreedingRecordService(HttpClient _http)
+        public BreedingRecordService(HttpClient _http, IConfiguration _config)
         {
             Http = _http;
+            config = _config;
+            ApiUrl = config.GetSection("api").Value;
         }
 
         public async Task<List<BreedingRecord>> CreateBreedingRecord(CreateBreedingRecordDto newBreedingRecord, string key)
         {
+            
+
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
 
-            var response = await Http.PostAsJsonAsync<CreateBreedingRecordDto>("http://localhost:5050/BreedingRecord", newBreedingRecord);
+            var response = await Http.PostAsJsonAsync<CreateBreedingRecordDto>(ApiUrl + "/BreedingRecord", newBreedingRecord);
 
             ServiceResponse<List<BreedingRecord>> content = await response.Content.ReadFromJsonAsync<ServiceResponse<List<BreedingRecord>>>();
 
             return content.Data;
         }
 
-        public async Task<List<BreedingRecord>> DeleteBreedingRecord(int id)
+        public async Task<List<BreedingRecord>> DeleteBreedingRecord(int id, string key)
         {
-            throw new NotImplementedException();
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
+
+            var response = await Http.DeleteAsync(ApiUrl + "/BreedingRecord/" + id);
+
+            ServiceResponse<List<BreedingRecord>> content = await response.Content.ReadFromJsonAsync<ServiceResponse<List<BreedingRecord>>>();
+
+            return content.Data;
         }
 
         public async Task<List<BreedingRecord>> GetAllBreedingRecords(string key)
         {
+            Console.WriteLine("Key: " + key);
+
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
 
-            var response = await Http.GetAsync("http://localhost:5050/BreedingRecord");
+            var response = await Http.GetAsync(ApiUrl + "/BreedingRecord");
 
             ServiceResponse<List<BreedingRecord>> content = await response.Content.ReadFromJsonAsync<ServiceResponse<List<BreedingRecord>>>();
 
@@ -52,16 +67,22 @@ namespace BreederBlazor.Services.BreedingRecords
         {
             Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
 
-            var response = await Http.GetAsync("http://localhost:5050/BreedingRecord/" + id.ToString());
+            var response = await Http.GetAsync(ApiUrl + "/BreedingRecord/" + id.ToString());
 
             ServiceResponse<BreedingRecord> content = await response.Content.ReadFromJsonAsync<ServiceResponse<BreedingRecord>>();
 
             return content.Data;
         }
 
-        public async Task<BreedingRecord> UpdateBreedingRecord(UpdateBreedingRecordDto updatedBreedingRecord)
+        public async Task<BreedingRecord> UpdateBreedingRecord(UpdateBreedingRecordDto updatedBreedingRecord, string key)
         {
-            throw new NotImplementedException();
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
+
+            var response = await Http.PutAsJsonAsync<UpdateBreedingRecordDto>(ApiUrl + "/BreedingRecord", updatedBreedingRecord);
+            
+            ServiceResponse<BreedingRecord> content = await response.Content.ReadFromJsonAsync<ServiceResponse<BreedingRecord>>();
+
+            return content.Data;
         }
     }
 }

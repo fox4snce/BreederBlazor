@@ -19,9 +19,9 @@ namespace BreederBlazor.Services.BreedingRecords
         Task<BreedingRecord> GetBreedingRecordById(string key, int id);
 
         // Update
-        Task<BreedingRecord> UpdateBreedingRecord(UpdateBreedingRecordDto updatedBreedingRecord);
+        Task<BreedingRecord> UpdateBreedingRecord(UpdateBreedingRecordDto updatedBreedingRecord, string key);
 
         // Delete
-        Task<List<BreedingRecord>> DeleteBreedingRecord(int id);
+        Task<List<BreedingRecord>> DeleteBreedingRecord(int id, string key);
     }
 }

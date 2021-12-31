@@ -1,5 +1,148 @@
-﻿
+﻿@using BreederBlazor.Models.Base
+@using BreederBlazor.Components.Views
 
-@code {
+@using BreederBlazor.Services.BreedingRecords
+@using BreederBlazor.Components
 
+@using BreederBlazor.Components.Forms
+
+@inherits BasePageComponent
+
+@inject IBreedingRecordService BreedingRecordService
+
+@if (Loaded && Record != null)
+{
+    
+
+    <div class="row" style="margin-bottom: 8px; padding: 4px; background-color: azure;">
+        <div class="col" style="text-align: left;">
+            <strong>@Record.Name</strong>
+        </div>
+        
+    </div>
+
+    <RadzenTabs Change=@OnChange style="">
+        <Tabs>
+            <RadzenTabsItem Text="Info">
+                <div class="row">
+                    <div class="col-2" style="text-align: right;">
+                        Birthdate
+                    </div>
+                    <div class="col">
+                        @Record.Birthday.Date.ToShortDateString()
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-2" style="text-align: right;">
+                        Sex
+                    </div>
+                    <div class="col">
+                        @Record.Sex
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-2" style="text-align: right;">
+                        Acquired
+                    </div>
+                    <div class="col">
+                        @Record.DateOfAcquisition.ToShortDateString()
+                    </div>
+                </div>
+                @if (Record.BirthLitter != null)
+                {
+                    <div class="row">
+                        <div class="col-2" style="text-align: right;">
+                            Birth Litter
+                        </div>
+                        <div class="col">
+                            @Record.BirthLitter.Name
+                        </div>
+                    </div>
+                }
+                @foreach (Characteristic characteristic in Record.Characteristics)
+                {
+                    <div class="row">
+                        <div class="col-2" style="text-align: right;">
+                            @characteristic.Category
+                        </div>
+                        <div class="col">
+                            @characteristic.Feature
+                        </div>
+                    </div>
+                }
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="Notes">
+                @foreach (Note note in Record.Notes)
+                {
+                    <div style="margin: 10px;">
+                        <NoteComponent Note="note" />
+                    </div>
+                }
+            </RadzenTabsItem>
+            <RadzenTabsItem Text="Contacts">
+                @if (Record.Owner != null)
+                {
+                    <div class="row">
+                        <div class="col">
+                            <ContactComponent contactRecord="@Record.Owner" />
+                        </div>
+                    </div>
+                }
+
+                @if (Record.Breeder != null)
+                {
+                    <div class="row" style="margin-top: 10px;">
+                        
+                        <div class="col">
+                            <ContactComponent contactRecord="@Record.Breeder" />
+                        </div>
+                    </div>
+                }
+
+
+            </RadzenTabsItem>
+        </Tabs>
+    </RadzenTabs>
+}
+
+@code
+{
+    [Parameter]
+    public BreedingRecord Record { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await RetrieveDetails();
+
+        Loaded = true;
+    }
+
+
+    private async Task RetrieveDetails()
+    {
+        Record = await BreedingRecordService.GetBreedingRecordById(AuthService.user.Key, Record.Id);
+
+    }
+
+    void OnClickEditBreedingRecord(string buttonName)
+    {
+        
+    }
+
+    void OnChange(int index)
+    {
+        //console.Log($"Tab with index {index} was selected.");
+    }
+
+    /*
+    void OnClickNewBreedingRecordNote(string buttonName)
+    {
+        PageHistory.PushPage("/breedingRecord/view/" + Record.Id);
+        NavigationManager.NavigateTo("/createBreedingRecordNote");
+    }
+    */
 }

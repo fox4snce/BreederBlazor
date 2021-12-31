@@ -14,25 +14,40 @@
 
 @if (Loaded && Record != null)
 {
+    @*
     <RadzenButton Click=@(args => OnClickNewBreedingRecordNote("Button with text")) Text="New Breeding Record Note" Style="margin-bottom: 20px; width: 150px" />
 
+    
     <BreedingRecordNoteForm />
+    *@
 
     <div class="row" style="margin-bottom: 8px; padding: 4px; background-color: azure;">
-        <div class="col" style="text-align: center;">
+        <div class="col" style="text-align: left;">
             <strong>@Record.Name</strong>
-        </div>
-        <div class="col" style="text-align: center;">
-            @Record.Birthday.Date.ToShortDateString()
-        </div>
-        <div class="col" style="text-align: center;">
-            @Record.Sex
         </div>
     </div>
 
     <RadzenTabs Change=@OnChange style="">
         <Tabs>
             <RadzenTabsItem Text="Info">
+                <div class="row">
+                    <div class="col" style="text-align: right;">
+                        Birthdate
+                    </div>
+                    <div class="col">
+                        @Record.Birthday.Date.ToShortDateString()
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col" style="text-align: right;">
+                        Sex
+                    </div>
+                    <div class="col">
+                        @Record.Sex
+                    </div>
+                </div>
+
                 <div class="row">
                     <div class="col" style="text-align: right;">
                         Acquired
@@ -112,7 +127,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        await base.OnInitializedAsync();
 
         await RetrieveDetails();
 

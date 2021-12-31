@@ -9,6 +9,9 @@
 @inject IAuthService AuthService
 @inject HttpClient Http
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime 
+
+
 
 <h1>@Greeting</h1>
 
@@ -52,8 +55,13 @@
             AuthService.user.Username = userName;
             AuthService.user.Key = content.Data;
 
-            
-            NavigationManager.NavigateTo("/breedingRecordList");
+            await JSRuntime.InvokeVoidAsync("localStorage.setItem", "key", AuthService.user.Key);
+
+
+
+            // NavigationManager.NavigateTo("/breedingRecordList");
+            NavigationManager.NavigateTo("/breedingRecord/ListView");
+
         }
 
 
@@ -72,7 +80,7 @@
         //console.Log($"{name} -> Username: {args.Username} and password: {args.Password}");
 
         await Login();
-        
+
     }
 
     void OnRegister(string name)

@@ -1,0 +1,63 @@
+Breeder features?
+
+
+
+View all the critter - :)
+
+Critter
+	c	
+	r 	- :)
+	u	
+	d
+	
+Contacts
+	c
+	r
+	u
+	d
+	
+Litter
+	c
+	r
+	u
+	d
+	
+Notes
+	all notes
+	
+	c
+	r
+	u
+	d
+	
+
+Issues:
+	Critter
+		View all critters (breedingRecordList)
+			New breeding record button should be a simple +
+			New Contact and New Litter buttons should be removed
+			Grid should only list a single page at a time
+			Initial sort order ???
+			
+		
+		View one
+			New Note Component is embedded in Critter View 
+			
+	
+	
+	Contacts
+		Need a contacts list
+			Clicking on a name on the list gives details
+		Needs a + leading to contact form
+		Need a delete and edit contacts
+		
+	
+	Litters
+	
+	Notes
+		You can't create a note for a litter
+		Create a notes component
+			send the data for the set of notes 
+		
+		
+	
