@@ -15,7 +15,7 @@ namespace BreederBlazor.Models.Base
         public DateTime Edited { get; set; }
 
         // Data
-        public bool Medical { get; set; }
+        public bool Medical { get; set; } = false;
         public string Title { get; set; } = "";
         public string Body { get; set; } = "";
 

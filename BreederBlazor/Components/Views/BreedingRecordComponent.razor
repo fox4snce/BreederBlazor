@@ -74,12 +74,7 @@
                 }
             </RadzenTabsItem>
             <RadzenTabsItem Text="Notes">
-                @foreach (Note note in Record.Notes)
-                {
-                    <div style="margin: 10px;">
-                        <NoteComponent Note="note" />
-                    </div>
-                }
+                <NoteListComponent Notes="Record.Notes" NoteType="BreedingRecord" RecordId="Record.Id"/>
             </RadzenTabsItem>
             <RadzenTabsItem Text="Contacts">
                 @if (Record.Owner != null)

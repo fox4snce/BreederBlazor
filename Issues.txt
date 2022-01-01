@@ -5,10 +5,10 @@ Breeder features?
 View all the critter - :)
 
 Critter
-	c	
+	c	- :)
 	r 	- :)
-	u	
-	d
+	u	- :) 
+	d	- :) 
 	
 Contacts
 	c

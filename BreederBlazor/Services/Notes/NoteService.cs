@@ -36,9 +36,15 @@ namespace BreederBlazor.Services.Notes
             return content.Data;
         }
 
-        public Task<List<Note>> DeleteNote(int id)
+        public async Task<List<Note>> DeleteNote(int id, string key)
         {
-            throw new NotImplementedException();
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
+
+            var response = await Http.DeleteAsync(ApiUrl + "/Note/" + id);
+
+            ServiceResponse<List<Note>> content = await response.Content.ReadFromJsonAsync<ServiceResponse<List<Note>>>();
+
+            return content.Data;
         }
 
         public async Task<List<Note>> GetAllNotes(string key)
@@ -63,9 +69,15 @@ namespace BreederBlazor.Services.Notes
             return content.Data;
         }
 
-        public async Task<Note> UpdateNote(UpdateNoteDto updatedNote)
+        public async Task<Note> UpdateNote(UpdateNoteDto updatedNote, string key)
         {
-            throw new NotImplementedException();
+            Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", key);
+
+            var response = await Http.PutAsJsonAsync<UpdateNoteDto>(ApiUrl + "/Note", updatedNote);
+
+            ServiceResponse<Note> content = await response.Content.ReadFromJsonAsync<ServiceResponse<Note>>();
+
+            return content.Data;
         }
     }
 }

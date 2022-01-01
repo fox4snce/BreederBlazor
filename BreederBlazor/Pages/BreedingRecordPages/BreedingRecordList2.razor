@@ -21,21 +21,18 @@
 @if (Loaded)
 {
     <div class="row" Style="margin-bottom: 20px; margin-top: 20px;">
-        <div class="col-1">
-            <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) ButtonStyle="ButtonStyle.Secondary" >[New]</RadzenButton>
+        <div class="col">
+            <RadzenButton Click=@(args => OnClickNewBreedingRecord("Button with text")) ButtonStyle="ButtonStyle.Secondary" >New</RadzenButton>
+            <RadzenButton Click=@(args => OnClickEditBreedingRecord("Button with text")) ButtonStyle="ButtonStyle.Secondary" >Edit</RadzenButton>
+            <RadzenButton Click=@(args => OnClickDeleteBreedingRecord("Button with text")) ButtonStyle="ButtonStyle.Secondary" >Delete</RadzenButton>
         </div>
-        <div class="col-1">
-            <RadzenButton Click=@(args => OnClickEditBreedingRecord("Button with text")) ButtonStyle="ButtonStyle.Secondary" >[Edit]</RadzenButton>
-        </div>
-        <div class="col-1">
-            <RadzenButton Click=@(args => OnClickDeleteBreedingRecord("Button with text")) ButtonStyle="ButtonStyle.Secondary" >[Delete]</RadzenButton>
-        </div>
+        
     </div>
     
     
 
     <div class="row">
-        <div class="col-4">
+        <div class="col-5">
             
             <RadzenDataGrid AllowFiltering="true" FilterCaseSensitivity="FilterCaseSensitivity.CaseInsensitive" FilterMode="FilterMode.Advanced" AllowPaging="false" PageSize="4"
                 AllowSorting="true" SelectionMode="DataGridSelectionMode.Single" @bind-Value=@selectedRecord Data="@breedingRecords.AsQueryable()" TItem="BreedingRecord" ColumnWidth="200px" >

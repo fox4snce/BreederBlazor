@@ -3,55 +3,48 @@
 @if (Loaded)
 {
     
-                <RadzenCard Style="width: 50%; padding: 0px; background-color: aliceblue">
-                    @*<div class="row" style="margin: 0px; background-color: white; border-bottom: 1px solid lightgray; ">
-                        <div class="col" style="margin-left: 0px; margin-right: 0px;">
-                            <strong>@Note.Title</strong> 
-                        </div>
-                    </div>*@
-                    
-                    <div class="row" style="margin: 10px 15px 10px 15px; border-radius: 4px; background-color: white;">
-                        <div class="col" style="">
-                            @Note.Body
-                        </div>
-                    </div>
-                    <div class="row" style="background-color: lightblue; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; ">
-                        <div class="col" style="text-align: right;">
-                            <small>Updated: @Note.Edited.ToShortDateString()</small>
-                        </div>
-                        <div class="col" style="">
-                            <small>Created: @Note.Created.ToShortDateString()</small>
-                        </div>
+    <RadzenCard Style="width: 100%; padding: 0px; background-color: aliceblue">
+        
+            <div class="row" style="margin: 10px 15px 10px 15px; border-radius: 4px; ">
+            <div class="col" style="">
+                @Note.Body
+            </div>
+        </div>
+        <div class="row" style="background-color: lightblue; margin-bottom: 0px; margin-left: 0px; margin-right: 0px; ">
+            <div class="col" style="text-align: left;">
+                <small>Updated: @Note.Edited.ToShortDateString()</small>
+            </div>
+            <div class="col" style="text-align: right;">
+                <small>Created: @Note.Created.ToShortDateString()</small>
+            </div>
                         
-                    </div>
-                </RadzenCard>
+        </div>
+    </RadzenCard>
             
 }
 
 @code
 {
-        [Parameter]
-        public Note Note { get; set; }
+    [Parameter]
+    public Note Note { get; set; }
 
-        private bool Loaded = false;
+    private bool Loaded = false;
 
-        private bool FullView = false;
+    private bool FullView = false;
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        if (Note == null)
         {
-            if (Note == null)
+            Note brc = new Note
             {
-                Note brc = new Note
-                {
-                    Title = "Testing",
-                    Edited = DateTime.Now,
-                    Body = "Testing Body"
+                Title = "Testing",
+                Edited = DateTime.Now,
+                Body = "Testing Body"
             };
 
             Note = brc;
         }
-
-
         Loaded = true;
     }
 

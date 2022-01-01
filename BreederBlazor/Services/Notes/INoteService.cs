@@ -18,9 +18,9 @@ namespace BreederBlazor.Services.Notes
         Task<Note> GetNoteById(string key, int id);
 
         // Update
-        Task<Note> UpdateNote(UpdateNoteDto updatedNote);
+        Task<Note> UpdateNote(UpdateNoteDto updatedNote, string key);
 
         // Delete
-        Task<List<Note>> DeleteNote(int id);
+        Task<List<Note>> DeleteNote(int id, string key);
     }
 }

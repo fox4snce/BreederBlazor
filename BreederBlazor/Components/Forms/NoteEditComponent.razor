@@ -1,0 +1,68 @@
+﻿@using BreederBlazor.Models.Base
+@using BreederBlazor.Services.Util
+
+@if (Loaded)
+{
+    <RadzenHtmlEditor @bind-Value=@Text style="height: 500px; margin-bottom: 1rem;" UploadUrl="upload/image" Change=@OnChange Paste=@OnPaste Execute=@OnExecute>
+        <RadzenHtmlEditorUndo />
+        <RadzenHtmlEditorRedo />
+        <RadzenHtmlEditorSeparator />
+        <RadzenHtmlEditorBold />
+        <RadzenHtmlEditorItalic />
+        <RadzenHtmlEditorUnderline />
+        <RadzenHtmlEditorStrikeThrough />
+        <RadzenHtmlEditorSeparator />
+        <RadzenHtmlEditorColor />
+        <RadzenHtmlEditorBackground />
+        <RadzenHtmlEditorRemoveFormat />
+    </RadzenHtmlEditor>
+
+    <div class="col-xl-6">
+        <EventConsole @ref=@console />
+    </div>
+}
+
+
+
+@code {
+
+    [Parameter]
+    public string Text { get; set; }
+
+    [Parameter]
+    public EventCallback<string> TextChanged { get; set; }
+
+
+
+
+
+    private bool Loaded = false;
+
+    EventConsole console;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Loaded = true;
+    }
+
+
+
+    void OnPaste(HtmlEditorPasteEventArgs args)
+    {
+        console.Log($"Paste: {args.Html}");
+    }
+
+    void OnChange(string html)
+    {
+        TextChanged.InvokeAsync(html);
+
+        console.Log($"Change: {html}");
+    }
+
+    void OnExecute(HtmlEditorExecuteEventArgs args)
+    {
+        console.Log($"Execute: {args.CommandName}");
+    }
+
+
+}

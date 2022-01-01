@@ -1,0 +1,191 @@
+﻿@using BreederBlazor.Models.Base
+@using BreederBlazor.Components.Forms
+@using BreederBlazor.Services.Notes
+@using BreederBlazor.Services.Auth
+@using BreederBlazor.Models.Dtos.NoteDto
+
+@inject INoteService NoteService
+@inject IAuthService AuthService
+
+@if (loaded)
+{
+    <div class="row" Style="margin-bottom: 4px; margin-top: 4px;">
+        <div class="col" >
+            @if (!editing)
+            {
+                <RadzenButton Click=@(args => OnClickNewNote()) ButtonStyle="ButtonStyle.Secondary" >New</RadzenButton>
+                @*<RadzenButton Click=@(args => OnClickEditNote()) ButtonStyle="ButtonStyle.Secondary" >Edit</RadzenButton>
+                <RadzenButton Click=@(args => OnClickDeleteNote()) ButtonStyle="ButtonStyle.Secondary" >Delete</RadzenButton>*@
+            } else
+            {
+                <RadzenButton Click=@(args => OnClickSaveNote()) ButtonStyle="ButtonStyle.Secondary" >Save</RadzenButton>
+                <RadzenButton Click=@(args => OnClickCancelNote()) ButtonStyle="ButtonStyle.Secondary" >Cancel</RadzenButton>
+            }
+        </div>
+    </div>
+
+    @if (editing)
+    {
+        <NoteEditComponent @bind-Text="editorText" />
+    }   
+    else
+    {
+        <RadzenDataList WrapItems="true" AllowPaging="true" Data="@Notes" TItem="Note" PageSize="6" >
+            <Template Context="data">
+                <div class="row" style="margin: 0px; padding: 0px 4px 12px 0px; width: 100%; border: none;">
+                    <div class="col" style="padding: 0px; border: none;">
+                        <NoteComponent Note="data" />
+                    </div>
+                    <div class="col-1">
+                        <div class="row">
+                            <div class="col">
+                                <RadzenButton Click=@(args => OnClickEditNote(data)) ButtonStyle="ButtonStyle.Secondary" Icon="edit" ></RadzenButton>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                <RadzenButton Click=@(args => OnClickDeleteNote(data)) ButtonStyle="ButtonStyle.Secondary" Icon="delete" ></RadzenButton>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                        
+            </Template>
+        </RadzenDataList>
+
+    }
+    
+}
+
+<style>
+    .rz-datalist-data > li 
+    {
+        border-width: 0px;
+        padding: 0px;
+        margin: 0px;
+    }
+@*
+    .rz-g row {
+        border-width: 0px;
+        padding: 0px;
+        margin: 0px;
+    }*@
+
+    .rz-tabview-panel thead 
+    {
+        display: none;
+    }
+</style>
+
+@code {
+
+    [Parameter]
+    public ICollection<Note> Notes { get; set; }
+
+    [Parameter]
+    public string NoteType { get; set; }
+
+    [Parameter]
+    public int RecordId { get; set; }
+
+    private string editorText = "";
+
+    private IList<Note> selectedNotes;
+
+    private bool loaded = false;
+
+    private bool editing = false;
+
+    private bool updating = false;
+
+    private Note currentNote = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentNote = new Note();
+
+        loaded = true;
+    }
+
+    void OnClickNewNote()
+    {
+        currentNote = null;
+        editorText = "";
+        updating = false;
+        editing = true;
+    }
+
+    void OnClickEditNote(Note note)
+    {
+        editorText = note.Body;
+        currentNote = note;
+        updating = true;
+        editing = true;
+    }
+
+    async Task OnClickDeleteNote(Note note)
+    {
+        currentNote = note;
+        List<Note> tempNotes = await NoteService.DeleteNote(note.Id, AuthService.user.Key);
+
+        if(NoteType == "BreedingRecord")
+        {
+            Notes = tempNotes.Where(tn => tn.BreedingRecordId != null).ToList();    
+        }
+
+    }
+
+    async Task OnClickSaveNote()
+    {
+        if (updating)
+        {
+            UpdateNoteDto updatedNoteDto = new UpdateNoteDto();
+            updatedNoteDto.Body = editorText;
+
+            if(NoteType == "BreedingRecord")
+            {
+                updatedNoteDto.BreedingRecordId = RecordId;
+            }
+            updatedNoteDto.Id = currentNote.Id;
+
+            updatedNoteDto.Medical = currentNote.Medical;
+
+            await NoteService.UpdateNote(updatedNoteDto, AuthService.user.Key);
+
+            List<Note> tempNotes = await NoteService.GetAllNotes(AuthService.user.Key);
+
+            if(NoteType == "BreedingRecord")
+            {
+                Notes = tempNotes.Where(tn => tn.BreedingRecordId != null).ToList();    
+            }
+        }
+        else
+        {
+            CreateNoteDto createNoteDto = new CreateNoteDto();
+            createNoteDto.Body = editorText;
+
+            if(NoteType == "BreedingRecord")
+            {
+                createNoteDto.BreedingRecordId = RecordId;
+            }
+
+            List<Note> tempNotes = await NoteService.CreateNote(createNoteDto, AuthService.user.Key);
+            
+            if(NoteType == "BreedingRecord")
+            {
+                Notes = tempNotes.Where(tn => tn.BreedingRecordId != null).ToList();    
+            }
+            
+        }
+
+
+        editing = false;
+    }
+
+    async Task OnClickCancelNote()
+    {
+        editing = false;
+    }
+
+
+}
